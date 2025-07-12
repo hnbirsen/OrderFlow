@@ -1,4 +1,5 @@
-﻿using OrderFlow.Domain.Entities;
+﻿using OrderFlow.Domain.Dependencies;
+using OrderFlow.Domain.Entities;
 using System.Linq.Expressions;
 
 namespace OrderFlow.Domain.Interfaces
