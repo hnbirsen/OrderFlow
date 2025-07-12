@@ -11,10 +11,6 @@ public class OrderConfiguration : IEntityTypeConfiguration<OrderEntity>
     {
         builder.ConfigureBaseEntity();
 
-        builder.Property(x => x.OrderNumber)
-            .IsRequired()
-            .HasMaxLength(15);
-
         builder.Property(x => x.TotalAmount)
             .IsRequired();
 

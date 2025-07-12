@@ -1,13 +1,10 @@
-﻿using OrderFlow.Domain.Entities;
-using OrderFlow.Domain.Interfaces.Repositories;
+﻿using OrderFlow.Domain.Interfaces;
+using OrderFlow.Domain.Entities;
 using OrderFlow.Persistence.Context;
 
 namespace OrderFlow.Persistence.Repositories
 {
-    public class OrderStatusHistoryRepository : Repository<OrderStatusHistoryEntity>, IOrderStatusHistoryRepository
+    public class OrderStatusHistoryRepository(OrderFlowDbContext context) : Repository<OrderStatusHistoryEntity>(context), IOrderStatusHistoryRepository
     {
-        public OrderStatusHistoryRepository(OrderFlowDbContext context) : base(context)
-        {
-        }
     }
 }

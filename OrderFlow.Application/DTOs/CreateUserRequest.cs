@@ -1,13 +1,13 @@
 ﻿using OrderFlow.Domain.Enums;
 
-namespace OrderFlow.Domain.Entities
+namespace OrderFlow.Application.DTOs
 {
-    public class UserEntity : BaseEntity
+    public class CreateUserRequest
     {
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        public string FirstName { get; set; } = string.Empty;
-        public string LastName { get; set; } = string.Empty;
+        public required string Username { get; set; }
+        public required string Email { get; set; }
+        public required string FirstName { get; set; }
+        public required string LastName { get; set; }
         public string? PhoneNumber { get; set; } = null;
         public string? Address { get; set; } = null;
         public string? City { get; set; } = null;
@@ -15,10 +15,6 @@ namespace OrderFlow.Domain.Entities
         public string? ZipCode { get; set; } = null;
         public string? Country { get; set; } = null;
         public string? ProfilePictureUrl { get; set; } = null;
-        public DateTime? LastLogin { get; set; } = null;
         public UserRoleEnum Role { get; set; } = UserRoleEnum.Customer;
-
-
-        public ICollection<OrderEntity> Orders { get; set; } = new List<OrderEntity>();
     }
 }

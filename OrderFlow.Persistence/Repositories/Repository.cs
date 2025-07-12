@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OrderFlow.Domain.Interfaces;
 using OrderFlow.Domain.Entities;
-using OrderFlow.Domain.Interfaces.Repositories;
 using OrderFlow.Persistence.Context;
 using System.Linq.Expressions;
 
@@ -29,10 +29,22 @@ namespace OrderFlow.Persistence.Repositories
         public async Task AddAsync(T entity)
             => await _dbSet.AddAsync(entity);
 
+        public async Task AddRangeAsync(IEnumerable<T> entities)
+            => await _dbSet.AddRangeAsync(entities);
+
         public void Update(T entity)
             => _dbSet.Update(entity);
 
+        public void UpdateRange(IEnumerable<T> entities)
+            => _dbSet.UpdateRange(entities);
+
         public void Remove(T entity)
             => _dbSet.Remove(entity);
+
+        public void RemoveRange(IEnumerable<T> entities)
+            => _dbSet.RemoveRange(entities);
+
+        public async Task<bool> CompleteAsync()
+            => await _context.SaveChangesAsync() > 0;
     }
 }

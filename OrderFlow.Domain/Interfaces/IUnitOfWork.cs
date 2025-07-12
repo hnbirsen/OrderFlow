@@ -1,6 +1,8 @@
-﻿namespace OrderFlow.Domain.Interfaces.Repositories
+﻿//using OrderFlow.Application.Dependencies;
+
+namespace OrderFlow.Domain.Interfaces
 {
-    public interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork : IDisposable//, IScoped
     {
         IOrderRepository Orders { get; }
         IUserRepository Users { get; }

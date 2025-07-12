@@ -1,4 +1,4 @@
-﻿using OrderFlow.Domain.Interfaces.Repositories;
+﻿using OrderFlow.Domain.Interfaces;
 using OrderFlow.Persistence.Context;
 
 namespace OrderFlow.Persistence.Repositories

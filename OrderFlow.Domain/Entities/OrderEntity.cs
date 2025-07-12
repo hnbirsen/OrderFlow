@@ -6,7 +6,6 @@ namespace OrderFlow.Domain.Entities
     {
         public int UserId { get; set; }
 
-        public string OrderNumber { get; set; } = string.Empty;
         public decimal TotalAmount { get; set; } = 0.0m;
         public new OrderStatusEnum Status { get; set; } = OrderStatusEnum.New;
         public string Description { get; set; } = string.Empty;

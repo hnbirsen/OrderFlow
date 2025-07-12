@@ -1,6 +1,6 @@
 ﻿using OrderFlow.Domain.Entities;
 
-namespace OrderFlow.Domain.Interfaces.Repositories
+namespace OrderFlow.Domain.Interfaces
 {
     public interface IOrderRepository : IRepository<OrderEntity>
     {

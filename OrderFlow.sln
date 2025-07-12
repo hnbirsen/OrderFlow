@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderFlow.Domain", "OrderFl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderFlow.Persistence", "OrderFlow.Persistence\OrderFlow.Persistence.csproj", "{8EC95392-D5FB-4059-89EA-F09B3EE0D34E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderFlow.Application", "OrderFlow.Application\OrderFlow.Application.csproj", "{EFEE3B18-C84F-4086-840E-EA65ECCBC51F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{8EC95392-D5FB-4059-89EA-F09B3EE0D34E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EC95392-D5FB-4059-89EA-F09B3EE0D34E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8EC95392-D5FB-4059-89EA-F09B3EE0D34E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFEE3B18-C84F-4086-840E-EA65ECCBC51F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFEE3B18-C84F-4086-840E-EA65ECCBC51F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFEE3B18-C84F-4086-840E-EA65ECCBC51F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFEE3B18-C84F-4086-840E-EA65ECCBC51F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
