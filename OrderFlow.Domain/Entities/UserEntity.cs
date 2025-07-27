@@ -18,6 +18,8 @@ namespace OrderFlow.Domain.Entities
         public DateTime? LastLogin { get; set; } = null;
         public UserRoleEnum Role { get; set; } = UserRoleEnum.Customer;
 
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiresAt { get; set; }
 
         public ICollection<OrderEntity> Orders { get; set; } = new List<OrderEntity>();
     }

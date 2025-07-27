@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace OrderFlow.Domain.Interfaces
 {
-    public interface IRepository<T> where T : BaseEntity
+    public interface IBaseRepository<T> where T : BaseEntity
     {
         Task<T?> GetByIdAsync(Guid id);
         Task<IEnumerable<T>> GetAllAsync();

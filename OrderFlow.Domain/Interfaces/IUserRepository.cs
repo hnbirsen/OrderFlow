@@ -3,7 +3,8 @@ using OrderFlow.Domain.Entities;
 
 namespace OrderFlow.Domain.Interfaces
 {
-    public interface IUserRepository : IRepository<UserEntity>, IScoped
+    public interface IUserRepository : IBaseRepository<UserEntity>, IScoped
     {
+        Task UpdateLastLogin(int userId);
     }
 }

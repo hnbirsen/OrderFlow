@@ -4,7 +4,7 @@ using OrderFlow.Persistence.Context;
 
 namespace OrderFlow.Persistence.Repositories
 {
-    public class OrderStatusHistoryRepository(OrderFlowDbContext context) : Repository<OrderStatusHistoryEntity>(context), IOrderStatusHistoryRepository
+    public class OrderStatusHistoryRepository(OrderFlowDbContext context) : BaseRepository<OrderStatusHistoryEntity>(context), IOrderStatusHistoryRepository
     {
     }
 }

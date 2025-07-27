@@ -24,8 +24,7 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
            .HasMaxLength(20);
 
         builder.Property(x => x.Password)
-            .IsRequired()
-            .HasMaxLength(20);
+            .IsRequired();
 
         builder.Property(x => x.Role)
             .IsRequired();

@@ -3,7 +3,7 @@ using OrderFlow.Domain.Entities;
 
 namespace OrderFlow.Domain.Interfaces
 {
-    public interface IOrderStatusHistoryRepository : IRepository<OrderStatusHistoryEntity>, IScoped
+    public interface IOrderStatusHistoryRepository : IBaseRepository<OrderStatusHistoryEntity>, IScoped
     {
     }
 }

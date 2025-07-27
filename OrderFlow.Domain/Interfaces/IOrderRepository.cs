@@ -3,7 +3,7 @@ using OrderFlow.Domain.Entities;
 
 namespace OrderFlow.Domain.Interfaces
 {
-    public interface IOrderRepository : IRepository<OrderEntity>, IScoped
+    public interface IOrderRepository : IBaseRepository<OrderEntity>, IScoped
     {
         Task<IEnumerable<OrderEntity>> GetOrdersByUserIdAsync(int userId);
     }
