@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using OrderFlow.Application.DTOs;
 using OrderFlow.Application.Interfaces.Abstract;
 
@@ -23,7 +22,6 @@ namespace OrderFlow.API.Controllers
         }
 
         [HttpPost("create")]
-        [AllowAnonymous]
         public async Task<IActionResult> Create([FromBody] CreateUserRequest request)
         {
             var result = await _userService.CreateUserAsync(request);

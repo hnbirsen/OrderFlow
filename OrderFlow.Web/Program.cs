@@ -19,6 +19,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseSession();
+app.UseMiddleware<SessionAuthMiddleware>();
 
 app.UseAuthorization();
 
