@@ -11,16 +11,16 @@
             <div class="brand-name">OrderFlow</div>
         </div>
         <h3 class="login-title text-center mb-3">Sign in to OrderFlow</h3>
-        <form asp-action="Login" method="post">
+        <form asp-action="Login" method="post" id="loginForm">
             <div class="mb-3">
                 <label asp-for="Email" class="form-label">Email address</label>
-                <input asp-for="Email" class="form-control" placeholder="Enter your email" autofocus />
+                <input asp-for="Email" class="form-control" placeholder="Enter your email" autofocus id="emailInput" />
             </div>
             <div class="mb-3">
                 <label asp-for="Password" class="form-label">Password</label>
                 <div style="position:relative;">
                     <input asp-for="Password" id="passwordInput" class="form-control" type="password" placeholder="Enter your password" />
-                    <button type="button" id="togglePwd" class="btn btn-ghost" style="position:absolute; right:6px; top:6px; padding:6px 10px;">👁</button>
+                    <button type="button" id="togglePwd" class="btn btn-ghost" style="position:absolute; right:0; top:0; padding:6px 10px;"><i class="bi bi-eye"></i></button>
                 </div>
             </div>
             <div class="mb-3 d-flex justify-content-between align-items-center">
@@ -28,7 +28,7 @@
                     <input type="checkbox" class="form-check-input" id="rememberMe" name="RememberMe" />
                     <label class="form-check-label" for="rememberMe">Remember me</label>
                 </div>
-                <a href="/Account/ForgotPassword" class="login-link">Forgot password?</a>
+                <a asp-controller="Account" asp-action="ForgotPassword" class="login-link">Forgot password?</a>
             </div>
             <button type="submit" class="btn btn-login w-100">Login</button>
         </form>
@@ -42,12 +42,63 @@
 @section Scripts{
     <script>
         (function(){
+            // Password toggle
             var btn = document.getElementById('togglePwd');
             var input = document.getElementById('passwordInput');
             if(btn && input){
                 btn.addEventListener('click', function(){
                     var t = input.getAttribute('type') === 'password' ? 'text' : 'password';
                     input.setAttribute('type', t);
+                });
+            }
+
+            // Cookie helpers
+            function setCookie(name, value, days) {
+                var expires = "";
+                if (days) {
+                    var date = new Date();
+                    date.setTime(date.getTime() + (days*24*60*60*1000));
+                    expires = "; expires=" + date.toUTCString();
+                }
+                document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+            }
+            function getCookie(name) {
+                var nameEQ = name + "=";
+                var ca = document.cookie.split(';');
+                for(var i=0;i < ca.length;i++) {
+                    var c = ca[i];
+                    while (c.charAt(0)==' ') c = c.substring(1,c.length);
+                    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+                }
+                return null;
+            }
+            function eraseCookie(name) {   
+                document.cookie = name+'=; Max-Age=-99999999; path=/';  
+            }
+
+            // Restore form values from cookie
+            var emailInput = document.getElementById('emailInput');
+            var rememberMe = document.getElementById('rememberMe');
+            if(emailInput && rememberMe){
+                var savedEmail = getCookie('of_email');
+                var savedRemember = getCookie('of_remember');
+                if(savedEmail && savedRemember === 'true'){
+                    emailInput.value = savedEmail;
+                    rememberMe.checked = true;
+                }
+            }
+
+            // Save form values to cookie on submit
+            var form = document.getElementById('loginForm');
+            if(form){
+                form.addEventListener('submit', function(){
+                    if(rememberMe.checked){
+                        setCookie('of_email', emailInput.value, 30);
+                        setCookie('of_remember', 'true', 30);
+                    }else{
+                        eraseCookie('of_email');
+                        eraseCookie('of_remember');
+                    }
                 });
             }
         })();
