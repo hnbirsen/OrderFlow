@@ -1,0 +1,88 @@
+﻿/* Login page aligned with dashboard theme (uses site.css variables) */
+body {
+    background: var(--surface);
+    color: var(--panel-ink);
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+}
+
+.login-surface {
+    padding: 16px;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--panel);
+    border: 1px solid var(--ring);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+}
+
+.login-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #0ea5e9, #6366f1);
+    color: white;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.brand-name {
+    font-weight: 700;
+    color: #e2e8f0;
+}
+
+.login-title {
+    margin: 0;
+}
+
+.form-label {
+    color: var(--muted);
+}
+
+.form-control {
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--ring);
+}
+
+.form-control:focus {
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 2px rgba(147, 197, 253, 0.5);
+}
+
+.btn-login {
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: var(--accent-ink);
+}
+
+.btn-login:hover {
+    filter: brightness(1.05);
+}
+
+.login-link {
+    color: #93c5fd;
+    text-decoration: none;
+}
+
+.login-link:hover {
+    color: #60a5fa;
+    text-decoration: underline;
+}
+
+.footer {
+    border-top: 1px solid var(--ring);
+}

@@ -19,6 +19,12 @@ namespace OrderFlow.Web.Controllers
             return View();
         }
 
+        [Route("dashboard")]
+        public IActionResult Dashboard()
+        {
+            return View();
+        }
+
         [Route("privacy")]
         public IActionResult Privacy()
         {

@@ -1,0 +1,35 @@
+<aside class="sidebar">
+	<div class="brand">
+		<div class="brand-mark">O</div>
+		<div class="brand-name">OrderFlow</div>
+	</div>
+
+	<nav class="nav">
+		<a asp-controller="Home" asp-action="Dashboard" active-class="nav-item--active" class="nav-item">
+			<span class="nav-ico" aria-hidden="true">🏠</span>
+			<span>Dashboard</span>
+		</a>
+		<a asp-controller="Orders" asp-action="List" active-class="nav-item--active" class="nav-item">
+			<span class="nav-ico" aria-hidden="true">🗂️</span>
+			<span>Orders</span>
+		</a>
+		<a asp-controller="Orders" asp-action="Create" active-class="nav-item--active" class="nav-item">
+			<span class="nav-ico" aria-hidden="true">➕</span>
+			<span>Create Order</span>
+		</a>
+		<a asp-controller="Orders" asp-action="Track" active-class="nav-item--active" class="nav-item">
+			<span class="nav-ico" aria-hidden="true">🔎</span>
+			<span>Track Order</span>
+		</a>
+		<a asp-controller="Orders" asp-action="MyOrders" active-class="nav-item--active" class="nav-item">
+			<span class="nav-ico" aria-hidden="true">🚚</span>
+			<span>My Deliveries</span>
+		</a>
+	</nav>
+
+	<button class="logout" type="button">
+		<span class="nav-ico" aria-hidden="true">🚪</span>
+		<span>Log out</span>
+	</button>
+</aside>
+

@@ -1,0 +1,47 @@
+<main class="main">
+	<header class="toolbar">
+		<div class="title-area">
+			<h1 class="title">Orders</h1>
+		</div>
+	</header>
+	<section class="content">
+		<div class="orders">
+			<div class="orders-head">
+				<div class="col col-check"><input id="masterCheck" type="checkbox" /></div>
+				<div class="col">Order</div>
+				<div class="col">Customer</div>
+				<div class="col">Status</div>
+				<div class="col col-right">Total</div>
+				<div class="col">Date</div>
+				<div class="col col-kebab" aria-hidden="true">⋯</div>
+			</div>
+			<div id="ordersBody" class="orders-body" role="list"></div>
+		</div>
+	</section>
+</main>
+
+<aside id="detail" class="detail">
+	<div class="detail-head">
+		<div>
+			<div class="detail-order" id="detailOrder">Order —</div>
+			<div class="detail-meta"><span id="detailStatus" class="badge"></span><span id="detailDate" class="dim"></span></div>
+		</div>
+		<button class="icon-btn" id="closeDetail" title="Close" type="button">✕</button>
+	</div>
+	<div>
+		<h3 class="section-title">Order items</h3>
+		<ul id="detailItems" class="item-list"></ul>
+	</div>
+	<div class="detail-total">
+		<div>Total</div>
+		<div id="detailTotal" class="total-amount">$—</div>
+	</div>
+</aside>
+
+@section Scripts {
+	<script>
+		// Reuse global render functions from site.js and data from window.demoOrders
+		renderOrders();
+	</script>
+}
+
