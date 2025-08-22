@@ -29,7 +29,7 @@ namespace OrderFlow.Application.Interfaces.Concrete
             });
         }
 
-        public async Task CreateUserAsync(CreateUserRequest request)
+        public async Task<bool> CreateUserAsync(CreateUserRequest request)
         {
             var user = new UserEntity
             {
@@ -49,6 +49,7 @@ namespace OrderFlow.Application.Interfaces.Concrete
             };
 
             await _userRepository.AddAsync(user);
+            return await _userRepository.CompleteAsync();
         }
     }
 }

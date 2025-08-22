@@ -6,6 +6,6 @@ namespace OrderFlow.Application.Interfaces.Abstract
     public interface IUserService : IScoped
     {
         Task<IEnumerable<UserDto>> GetAllUsersAsync();
-        Task CreateUserAsync(CreateUserRequest request);
+        Task<bool> CreateUserAsync(CreateUserRequest request);
     }
 }

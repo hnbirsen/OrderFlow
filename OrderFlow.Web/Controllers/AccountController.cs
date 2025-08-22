@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrderFlow.Web.Models;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace OrderFlow.Web.Controllers
 {
@@ -80,9 +81,9 @@ namespace OrderFlow.Web.Controllers
             var role = HttpContext.Session.GetString("role");
             return role switch
             {
-                "Admin" => RedirectToAction("Dashboard", "Home"),
+                "Admin" => RedirectToAction("Index", "Home"),
                 "Customer" => RedirectToAction("Create", "Orders"),
-                "Courier" => RedirectToAction("MyOrders", "Orders"),
+                "Courier" => RedirectToAction("MyDeliveries", "Orders"),
                 _ => RedirectToAction("Login")
             };
         }
@@ -91,7 +92,7 @@ namespace OrderFlow.Web.Controllers
         {
             var handler = new JwtSecurityTokenHandler();
             var jwt = handler.ReadJwtToken(token);
-            return jwt.Claims.FirstOrDefault(c => c.Type == "role")?.Value ?? "";
+            return jwt.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value ?? "";
         }
     }
 }
