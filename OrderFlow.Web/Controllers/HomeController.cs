@@ -19,18 +19,6 @@ namespace OrderFlow.Web.Controllers
             return View();
         }
 
-        [Route("dashboard")]
-        public IActionResult Dashboard()
-        {
-            return View();
-        }
-
-        [Route("privacy")]
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
         [Route("error")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

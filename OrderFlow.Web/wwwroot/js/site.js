@@ -239,3 +239,42 @@ if (closeBtn) closeBtn.addEventListener('click', () => clearDetail());
 
 // ===== Init ===================================================================
 // renderOrders() will be called from individual pages with their data
+
+// ===== Sidebar Toggle =========================================================
+function initSidebarToggle() {
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const surface = document.querySelector('.surface');
+    
+    if (!sidebar || !sidebarToggle || !surface) return;
+    
+    // Load saved state from localStorage
+    const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+    if (isCollapsed) {
+        sidebar.classList.add('collapsed');
+        surface.classList.add('sidebar-collapsed');
+    }
+    
+    sidebarToggle.addEventListener('click', () => {
+        const isCurrentlyCollapsed = sidebar.classList.contains('collapsed');
+        
+        if (isCurrentlyCollapsed) {
+            // Expand sidebar
+            sidebar.classList.remove('collapsed');
+            surface.classList.remove('sidebar-collapsed');
+            localStorage.setItem('sidebarCollapsed', 'false');
+        } else {
+            // Collapse sidebar
+            sidebar.classList.add('collapsed');
+            surface.classList.add('sidebar-collapsed');
+            localStorage.setItem('sidebarCollapsed', 'true');
+        }
+    });
+}
+
+// Initialize sidebar toggle when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSidebarToggle);
+} else {
+    initSidebarToggle();
+}

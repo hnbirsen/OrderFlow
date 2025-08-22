@@ -1,35 +1,40 @@
-<aside class="sidebar">
-	<div class="brand">
-		<div class="brand-mark">O</div>
-		<div class="brand-name">OrderFlow</div>
+<aside class="sidebar" id="sidebar">
+	<div class="sidebar-header">
+		<div class="brand">
+			<div class="brand-mark">O</div>
+			<div class="brand-name">OrderFlow</div>
+		</div>
+		<button class="sidebar-toggle" type="button" id="sidebarToggle" aria-label="Toggle sidebar">
+			<span class="toggle-icon"><i class="bi bi-arrows-collapse-vertical"></i></span>
+		</button>
 	</div>
 
 	<nav class="nav">
-		<a asp-controller="Home" asp-action="Dashboard" active-class="nav-item--active" class="nav-item">
+		<a asp-controller="Home" asp-action="Index" active-class="nav-item--active" class="nav-item" title="Dashboard">
 			<span class="nav-ico" aria-hidden="true">🏠</span>
-			<span>Dashboard</span>
+			<span class="nav-text">Dashboard</span>
 		</a>
-		<a asp-controller="Orders" asp-action="List" active-class="nav-item--active" class="nav-item">
+		<a asp-controller="Orders" asp-action="List" active-class="nav-item--active" class="nav-item" title="Orders">
 			<span class="nav-ico" aria-hidden="true">🗂️</span>
-			<span>Orders</span>
+			<span class="nav-text">Orders</span>
 		</a>
-		<a asp-controller="Orders" asp-action="Create" active-class="nav-item--active" class="nav-item">
+		<a asp-controller="Orders" asp-action="Create" active-class="nav-item--active" class="nav-item" title="Create Order">
 			<span class="nav-ico" aria-hidden="true">➕</span>
-			<span>Create Order</span>
+			<span class="nav-text">Create Order</span>
 		</a>
-		<a asp-controller="Orders" asp-action="Track" active-class="nav-item--active" class="nav-item">
+		<a asp-controller="Orders" asp-action="Track" active-class="nav-item--active" class="nav-item" title="Track Order">
 			<span class="nav-ico" aria-hidden="true">🔎</span>
-			<span>Track Order</span>
+			<span class="nav-text">Track Order</span>
 		</a>
-		<a asp-controller="Orders" asp-action="MyOrders" active-class="nav-item--active" class="nav-item">
+		<a asp-controller="Orders" asp-action="MyOrders" active-class="nav-item--active" class="nav-item" title="My Deliveries">
 			<span class="nav-ico" aria-hidden="true">🚚</span>
-			<span>My Deliveries</span>
+			<span class="nav-text">My Deliveries</span>
 		</a>
 	</nav>
 
-	<button class="logout" type="button">
+	<button class="logout" type="button" title="Log out">
 		<span class="nav-ico" aria-hidden="true">🚪</span>
-		<span>Log out</span>
+		<span class="nav-text">Log out</span>
 	</button>
 </aside>
 
