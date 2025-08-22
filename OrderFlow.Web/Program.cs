@@ -1,10 +1,13 @@
+using OrderFlow.Web.Helpers;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddHttpClient();
 builder.Services.AddSession();
-
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IApiRequestHelper, ApiRequestHelper>();
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

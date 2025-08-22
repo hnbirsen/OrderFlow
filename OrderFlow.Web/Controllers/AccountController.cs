@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using OrderFlow.Web.Helpers;
 using OrderFlow.Web.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -9,13 +10,13 @@ namespace OrderFlow.Web.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _configuration;
+        private readonly IApiRequestHelper _apiRequestHelper;
 
-        public AccountController(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        public AccountController(IConfiguration configuration, IApiRequestHelper apiRequestHelper)
         {
-            _httpClientFactory = httpClientFactory;
             _configuration = configuration;
+            _apiRequestHelper = apiRequestHelper;
         }
 
         [HttpGet("login")]
@@ -27,11 +28,11 @@ namespace OrderFlow.Web.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequest model)
         {
-            var client = _httpClientFactory.CreateClient();
-            client.BaseAddress = new Uri(_configuration["ApiBaseUrl"]);
-
-            var content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
-            var response = await client.PostAsync("/api/auth/login", content);
+            var response = await _apiRequestHelper.SendAsync(
+                "/api/auth/login",
+                HttpMethod.Post,
+                model
+            );
 
             if (!response.IsSuccessStatusCode)
             {
