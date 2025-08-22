@@ -25,9 +25,9 @@ namespace OrderFlow.Web.Controllers
             return View();
         }
 
-        // Courier: my assigned orders
-        [HttpGet("orders/my-orders")]
-        public IActionResult MyOrders()
+        // Courier: my assigned deliveries
+        [HttpGet("orders/my-deliveries")]
+        public IActionResult MyDeliveries()
         {
             return View();
         }
