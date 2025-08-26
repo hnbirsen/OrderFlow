@@ -1,19 +1,22 @@
+using OrderFlow.Web.Helpers.Abstract;
 using System.Text;
 using System.Text.Json;
 
-namespace OrderFlow.Web.Helpers
+namespace OrderFlow.Web.Helpers.Concrete
 {
     public class ApiRequestHelper : IApiRequestHelper
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<ApiRequestHelper> _logger;
 
-        public ApiRequestHelper(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+        public ApiRequestHelper(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, ILogger<ApiRequestHelper> logger)
         {
             _httpClientFactory = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
             _configuration = configuration;
+            _logger = logger;
         }
 
         public async Task<HttpResponseMessage> SendAsync(
@@ -48,9 +51,24 @@ namespace OrderFlow.Web.Helpers
             {
                 var json = JsonSerializer.Serialize(jsonBody);
                 request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+                _logger.LogInformation("Sending {Method} request to {Url} with body: {Body}", method, url, json);
+            }
+            else
+            {
+                _logger.LogInformation("Sending {Method} request to {Url} with no body.", method, url);
             }
 
-            return await client.SendAsync(request);
+            try
+            {
+                var response = await client.SendAsync(request);
+                _logger.LogInformation("Received response for {Method} {Url}: {StatusCode}", method, url, response.StatusCode);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending {Method} request to {Url}", method, url);
+                throw;
+            }
         }
     }
 }

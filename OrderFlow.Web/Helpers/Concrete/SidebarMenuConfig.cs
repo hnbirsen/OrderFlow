@@ -1,4 +1,4 @@
-namespace OrderFlow.Web.Helpers
+namespace OrderFlow.Web.Helpers.Concrete
 {
     public class SidebarMenuItem
     {
