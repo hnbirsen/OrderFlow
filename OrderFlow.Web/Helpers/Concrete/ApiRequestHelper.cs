@@ -27,7 +27,12 @@ namespace OrderFlow.Web.Helpers.Concrete
         {
             var client = _httpClientFactory.CreateClient();
 
-            client.BaseAddress = new Uri(_configuration["ApiBaseUrl"]);
+            var apiBaseUrl = _configuration["ApiBaseUrl"];
+            if (string.IsNullOrWhiteSpace(apiBaseUrl))
+            {
+                throw new InvalidOperationException("ApiBaseUrl configuration value is missing or empty.");
+            }
+            client.BaseAddress = new Uri(apiBaseUrl);
 
             // Retrieve access_token from session
             var accessToken = _httpContextAccessor.HttpContext?.Session.GetString("access_token");

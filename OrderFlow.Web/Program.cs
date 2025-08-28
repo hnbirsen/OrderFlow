@@ -1,6 +1,7 @@
 using Serilog;
 using OrderFlow.Web.Helpers.Abstract;
 using OrderFlow.Web.Helpers.Concrete;
+using OrderFlow.Web.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +34,10 @@ app.UseRouting();
 app.UseSession();
 app.UseMiddleware<SessionAuthMiddleware>();
 
-app.UseAuthorization();
+app.UseAuthentication();
+
+// Initialize static sidebar menu cache once on startup
+SidebarMenuConfig.Initialize();
 
 app.MapControllerRoute(
     name: "default",

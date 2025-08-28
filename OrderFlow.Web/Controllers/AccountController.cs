@@ -7,6 +7,9 @@ using System.Text.Json;
 
 namespace OrderFlow.Web.Controllers
 {
+    /// <summary>
+    /// Handles user authentication, password management, and session control.
+    /// </summary>
     public class AccountController : Controller
     {
         private readonly IConfiguration _configuration;
@@ -23,6 +26,9 @@ namespace OrderFlow.Web.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Displays the login view.
+        /// </summary>
         [HttpGet("login")]
         public IActionResult Login()
         {
@@ -30,6 +36,11 @@ namespace OrderFlow.Web.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Handles user login requests.
+        /// Authenticates the user and redirects based on their role.
+        /// </summary>
+        /// <param name="model">Login request data.</param>
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequest model)
         {
@@ -102,6 +113,9 @@ namespace OrderFlow.Web.Controllers
             }
         }
 
+        /// <summary>
+        /// Displays the forgot password view.
+        /// </summary>
         [HttpGet("forgot-password")]
         public IActionResult ForgotPassword()
         {
@@ -109,6 +123,11 @@ namespace OrderFlow.Web.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Handles forgot password requests.
+        /// Initiates the password reset process for the provided email.
+        /// </summary>
+        /// <param name="email">User's email address.</param>
         [HttpPost("forgot-password")]
         public IActionResult ForgotPassword(string email)
         {
@@ -118,6 +137,10 @@ namespace OrderFlow.Web.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Displays the reset password view.
+        /// </summary>
+        /// <param name="code">Reset code sent to the user.</param>
         [HttpGet("reset-password")]
         public IActionResult ResetPassword(string code)
         {
@@ -126,6 +149,12 @@ namespace OrderFlow.Web.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Handles password reset requests.
+        /// Resets the user's password using the provided code.
+        /// </summary>
+        /// <param name="code">Reset code.</param>
+        /// <param name="password">New password.</param>
         [HttpPost("reset-password")]
         public IActionResult ResetPassword(string code, string password)
         {
@@ -135,6 +164,9 @@ namespace OrderFlow.Web.Controllers
             return RedirectToAction("Login");
         }
 
+        /// <summary>
+        /// Logs out the current user and clears the session.
+        /// </summary>
         [HttpPost("logout")]
         public IActionResult Logout()
         {
@@ -143,6 +175,11 @@ namespace OrderFlow.Web.Controllers
             return RedirectToAction("Login");
         }
 
+        /// <summary>
+        /// Parses the user's role from a JWT access token.
+        /// </summary>
+        /// <param name="token">JWT access token.</param>
+        /// <returns>User role if found; otherwise, null.</returns>
         private string? ParseRoleFromJwt(string token)
         {
             var handler = new JwtSecurityTokenHandler();

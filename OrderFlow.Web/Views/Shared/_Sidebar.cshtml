@@ -4,7 +4,7 @@
 @{
     var role = Context.Session.GetString("role");
     var menuItems = SidebarMenuConfig.GetMenuItems()
-        .Where(item => item.RequiredRoles.Contains(role));
+        .Where(item => item.RequiredRoles.Count == 0 || item.RequiredRoles.Contains(role));
 }
 <aside class="sidebar" id="sidebar">
 	<div class="sidebar-header">
