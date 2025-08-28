@@ -33,6 +33,7 @@ app.UseRouting();
 
 app.UseSession();
 app.UseMiddleware<SessionAuthMiddleware>();
+app.UseMiddleware<TokenRefreshMiddleware>();
 
 app.UseAuthentication();
 

@@ -87,12 +87,15 @@ namespace OrderFlow.Web.Controllers
                 var role = ParseRoleFromJwt(loginResponse.AccessToken);
                 if (string.IsNullOrEmpty(role))
                 {
-                    _logger.LogError("Unable to determine user role for user: {Email}", model.Email);
-                    ViewBag.Error = "Unable to determine user role.";
+                    _logger.LogError("User role not found in token for user: {Email}", model.Email);
+                    ViewBag.Error = "User role not found. Please contact support.";
                     return View(model);
                 }
 
+                // Store tokens and email in session
                 HttpContext.Session.SetString("access_token", loginResponse.AccessToken);
+                HttpContext.Session.SetString("refresh_token", loginResponse.RefreshToken);
+                HttpContext.Session.SetString("email", model.Email);
                 HttpContext.Session.SetString("role", role);
 
                 _logger.LogInformation("User {Email} logged in successfully with role {Role}.", model.Email, role);
@@ -176,10 +179,8 @@ namespace OrderFlow.Web.Controllers
         }
 
         /// <summary>
-        /// Parses the user's role from a JWT access token.
+        /// Extracts the role claim from a JWT token.
         /// </summary>
-        /// <param name="token">JWT access token.</param>
-        /// <returns>User role if found; otherwise, null.</returns>
         private string? ParseRoleFromJwt(string token)
         {
             var handler = new JwtSecurityTokenHandler();
