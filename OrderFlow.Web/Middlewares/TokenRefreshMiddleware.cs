@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using OrderFlow.Web.Helpers.Abstract;
 using OrderFlow.Web.Models;
 using System.Text.Json;
@@ -11,7 +10,6 @@ namespace OrderFlow.Web.Middlewares
     public class TokenRefreshMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IApiRequestHelper _apiRequestHelper;
         private readonly ILogger<TokenRefreshMiddleware> _logger;
         private readonly TimeSpan _tokenRefreshThreshold = TimeSpan.FromMinutes(5);
 
@@ -20,11 +18,9 @@ namespace OrderFlow.Web.Middlewares
         /// </summary>
         public TokenRefreshMiddleware(
             RequestDelegate next,
-            IApiRequestHelper apiRequestHelper,
             ILogger<TokenRefreshMiddleware> logger)
         {
             _next = next;
-            _apiRequestHelper = apiRequestHelper;
             _logger = logger;
         }
 
@@ -42,7 +38,9 @@ namespace OrderFlow.Web.Middlewares
                 var tokenExpiration = GetTokenExpiration(accessToken);
                 if (ShouldRefreshToken(tokenExpiration))
                 {
-                    await RefreshTokenAsync(context, email, refreshToken);
+                    // Resolve IApiRequestHelper from the request's IServiceProvider
+                    var apiRequestHelper = context.RequestServices.GetRequiredService<IApiRequestHelper>();
+                    await RefreshTokenAsync(context, email, refreshToken, apiRequestHelper);
                 }
             }
 
@@ -70,11 +68,11 @@ namespace OrderFlow.Web.Middlewares
             return tokenExpiration.Value.Subtract(_tokenRefreshThreshold) <= DateTime.UtcNow;
         }
 
-        private async Task RefreshTokenAsync(HttpContext context, string email, string refreshToken)
+        private async Task RefreshTokenAsync(HttpContext context, string email, string refreshToken, IApiRequestHelper apiRequestHelper)
         {
             try
             {
-                var response = await _apiRequestHelper.SendAsync(
+                var response = await apiRequestHelper.SendAsync(
                     "/api/auth/refresh-token",
                     HttpMethod.Post,
                     new { Email = email, RefreshToken = refreshToken }
