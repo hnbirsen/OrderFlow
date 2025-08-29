@@ -12,9 +12,14 @@ const el = (tag, cls, text) => {
 };
 
 const statusClass = (s) => {
-	if (s === 'Paid') return 'paid';
+	debugger;
+	if (!s) return '';
+	if (s === 'New') return 'new';
+	if (s === 'Processing') return 'processing';
+	if (s === 'Sent') return 'sent';
 	if (s === 'Completed') return 'completed';
-	if (s === 'Delivered') return 'delivered';
+	if (s === 'Cancelled') return 'cancelled';
+	if (s === 'Refunded') return 'refunded';
 	return '';
 };
 
@@ -23,7 +28,6 @@ let state = {
 	orders: [...initialOrders],
 	selectedId: initialOrders[0]?.id ?? null,
 	statusFilter: 'all',
-	amountFilter: '100-1500', // label default
 	sortBy: 'date-desc'
 };
 
@@ -34,26 +38,17 @@ function renderOrders(orders = null) {
 		state.orders = [...orders];
 		state.selectedId = orders[0]?.id ?? null;
 	}
-	
 	const list = document.getElementById('ordersBody');
 	if (!list) return;
 	list.innerHTML = '';
 
 	const filtered = state.orders
+		.map(o => normalizeOrder(o))
 		.filter((o) => state.statusFilter === 'all' ? true : o.status === state.statusFilter)
-		.filter((o) => {
-			const range = state.amountFilter;
-			if (!range || range === 'all') return true;
-			if (range === '100-1500') return o.total >= 100 && o.total <= 1500;
-			const [min, max] = range.split('-').map(Number);
-			return o.total >= min && o.total <= max;
-		})
 		.sort((a, b) => {
 			switch (state.sortBy) {
-				case 'date-asc': return new Date(a.date) - new Date(b.date);
-				case 'date-desc': return new Date(b.date) - new Date(a.date);
-				case 'total-asc': return a.total - b.total;
-				case 'total-desc': return b.total - a.total;
+				case 'date-asc': return new Date(a.createdAt) - new Date(b.createdAt);
+				case 'date-desc': return new Date(b.createdAt) - new Date(a.createdAt);
 				default: return 0;
 			}
 		});
@@ -73,28 +68,20 @@ function renderOrders(orders = null) {
 		const c1 = el('div', 'col');
 		c1.appendChild(el('div', 'subtle', order.id));
 
-		// customer
-		const c2 = el('div', 'col');
-		const cust = el('div', 'customer');
-		const av = el('div', 'avatar');
-		av.style.setProperty('--bg', order.customer.color);
-		av.textContent = order.customer.initials;
-		const nameBox = el('div');
-		nameBox.appendChild(el('div', 'name', order.customer.name));
-		cust.append(av, nameBox);
-		c2.appendChild(cust);
+		// description
+		const c2 = el('div', 'col', order.description);
 
 		// status
 		const c3 = el('div', 'col');
 		const badge = el('span', `badge ${statusClass(order.status).toLowerCase()}`, order.status);
 		c3.appendChild(badge);
 
-		// total
-		const c4 = el('div', 'col col-right', fmtMoney(order.total));
+		// items count
+		const c4 = el('div', 'col', String(Object.keys(order.items || {}).length));
 
 		// date
 		const c5 = el('div', 'col',
-			new Intl.DateTimeFormat('en-US', { month: 'short', day: '2-digit' }).format(new Date(order.date))
+			new Intl.DateTimeFormat('en-US', { month: 'short', day: '2-digit' }).format(new Date(order.createdAt))
 		);
 
 		// kebab
@@ -141,7 +128,7 @@ function renderDetail(order) {
 	st.className = `badge ${statusClass(order.status).toLowerCase()}`;
 	st.textContent = order.status;
 
-	const date = new Date(order.date);
+	const date = new Date(order.createdAt);
 	const dateStr =
 		new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date) +
 		' · ' +
@@ -152,32 +139,50 @@ function renderDetail(order) {
 
 	const avatar = document.getElementById('detailAvatar');
 	if (avatar) {
-		avatar.style.setProperty('--bg', order.customer.color);
-		avatar.textContent = order.customer.initials;
+		avatar.style.setProperty('--bg', '#e5e7eb');
+		avatar.textContent = (String(order.id).slice(-2) || '??');
 	}
 
 	var detailNameEl = document.getElementById('detailName');
-	if (detailNameEl) detailNameEl.textContent = order.customer.name;
+	if (detailNameEl) detailNameEl.textContent = order.description;
 
 	const list = document.getElementById('detailItems');
 	if (list) {
 		list.innerHTML = '';
-		for (const item of order.items) {
+		const items = order.items || {};
+		for (const key of Object.keys(items)) {
+			const qty = items[key];
 			const li = el('li', 'item');
-			const t = el('div', 'thumb', '🧰');
+			const t = el('div', 'thumb', '📦');
 			const meta = el('div');
-			meta.appendChild(el('div', 'item-title', item.title));
-			meta.appendChild(el('div', 'item-note', 'SKU • Qty 1'));
-			const p = el('div', 'item-price', fmtMoney(item.price));
+			meta.appendChild(el('div', 'item-title', key));
+			meta.appendChild(el('div', 'item-note', `Qty ${qty}`));
+			const p = el('div', 'item-price', '');
 			li.append(t, meta, p);
 			list.appendChild(li);
 		}
 	}
 
-	const total = order.items.reduce((s, it) => s + it.price, 0);
-
 	var detailTotalEl = document.getElementById('detailTotal');
-	if (detailTotalEl) detailTotalEl.textContent = fmtMoney(total);
+	if (detailTotalEl) detailTotalEl.textContent = '';
+}
+
+// Normalize incoming data (OrderDto) in a case-insensitive way
+function normalizeOrder(o) {
+	if (!o || typeof o !== 'object') return { id: null, description: '', status: '', items: {}, createdAt: null };
+	const lowerKeyed = {};
+	for (const k in o) {
+		if (Object.prototype.hasOwnProperty.call(o, k)) {
+			lowerKeyed[k.toLowerCase()] = o[k];
+		}
+	}
+	return {
+		id: lowerKeyed['id'] ?? null,
+		description: lowerKeyed['description'] ?? '',
+		status: lowerKeyed['status'] ?? '',
+		items: lowerKeyed['items'] ?? {},
+		createdAt: lowerKeyed['createdat'] ?? null
+	};
 }
 
 // ===== Menus / Filters ========================================================

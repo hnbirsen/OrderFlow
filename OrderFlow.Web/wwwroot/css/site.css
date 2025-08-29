@@ -471,29 +471,32 @@ body {
 }
 
 .badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 6px 10px;
-    border-radius: 999px;
+    display: inline-block;
+    padding: 0.25em 0.75em;
+    border-radius: 1em;
     font-weight: 600;
-    font-size: 12px;
+    color: #fff;
+    font-size: 0.95em;
 }
-
-    .badge.paid {
-        background: var(--paid-bg);
-        color: var(--paid-fg);
+    .badge.new { /* Blue */
+        background: #2563eb;
+    }
+    .badge.processing { /* Orange */
+        background: #f59e42;
+    }
+    .badge.sent { /* Indigo */
+        background: #6366f1;
+    }
+    .badge.completed { /* Green */
+        background: #22c55e;
+    }
+    .badge.cancelled { /* Red */
+        background: #ef4444;
+    }
+    .badge.refunded { /* Gray */
+        background: #a3a3a3;
     }
 
-    .badge.completed {
-        background: var(--completed-bg);
-        color: var(--completed-fg);
-    }
-
-    .badge.delivered {
-        background: var(--delivered-bg);
-        color: var(--delivered-fg);
-    }
 
 /* Detail panel */
 .detail {

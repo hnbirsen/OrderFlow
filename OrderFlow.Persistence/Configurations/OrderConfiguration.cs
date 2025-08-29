@@ -11,6 +11,10 @@ public class OrderConfiguration : IEntityTypeConfiguration<OrderEntity>
     {
         builder.ConfigureBaseEntity();
 
+        builder.Property(x => x.Status)
+            .HasConversion<int>()
+            .IsRequired();
+
         builder.Property(x => x.TotalAmount)
             .IsRequired();
 

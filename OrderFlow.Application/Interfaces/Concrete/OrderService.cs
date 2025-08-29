@@ -60,5 +60,34 @@ namespace OrderFlow.Application.Interfaces.Concrete
 
             await _orderRepository.AddAsync(entity);
         }
+
+        public async Task<OrderDto?> GetOrderByTrackingCodeAsync(string trackingCode)
+        {
+            var result = await _orderRepository.FindAsync(o => o.TrackingCode == trackingCode);
+            if (result == null) return null;
+            
+            var order = result.FirstOrDefault();
+            if (order == null) return null;
+
+            return new OrderDto
+            {
+                Id = order.Id,
+                Description = order.Description,
+                TrackingCode = order.TrackingCode ?? string.Empty,
+                Items = order.Items ?? new Dictionary<string, int>(),
+                Status = order.Status,
+                CreatedAt = order.CreatedAt
+            };
+        }
+
+        public async Task<bool> UpdateOrderStatusAsync(Guid orderId, string status)
+        {
+            var order = await _orderRepository.GetByIdAsync(orderId);
+            if (order == null) return false;
+
+            order.Status = Enum.TryParse<OrderStatusEnum>(status, out var newStatus) ? newStatus : order.Status;
+            _orderRepository.Update(order);
+            return await _orderRepository.CompleteAsync();
+        }
     }    
 }

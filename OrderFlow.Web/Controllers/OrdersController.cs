@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using OrderFlow.Application.DTOs;
+using OrderFlow.Web.Helpers.Abstract;
 using OrderFlow.Web.Middlewares;
+using System.Text.Json;
 
 namespace OrderFlow.Web.Controllers
 {
@@ -9,6 +12,15 @@ namespace OrderFlow.Web.Controllers
     /// </summary>
     public class OrdersController : Controller
     {
+        private readonly ILogger<OrdersController> _logger;
+        private readonly IApiRequestHelper _apiRequestHelper;
+        
+        public OrdersController(ILogger<OrdersController> logger, IApiRequestHelper apiRequestHelper)
+        {
+            _logger = logger;
+            _apiRequestHelper = apiRequestHelper;
+        }
+
         /// <summary>
         /// Displays the order creation view.
         /// Accessible only to users with the "Customer" role.
@@ -26,9 +38,20 @@ namespace OrderFlow.Web.Controllers
         /// </summary>
         [HttpGet("orders")]
         [RoleAuthorize("Admin", "Customer")]
-        public IActionResult List()
+        public async Task<IActionResult> List()
         {
-            return View();
+            var httpResponse = await _apiRequestHelper.SendAsync("/api/order/get-all", HttpMethod.Get);
+
+            if (!httpResponse.IsSuccessStatusCode)
+                return View();
+            
+            var json = await httpResponse.Content.ReadAsStringAsync();
+            var orders = JsonSerializer.Deserialize<IEnumerable<OrderDto>>(json, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            return View(orders);
         }
 
         /// <summary>
