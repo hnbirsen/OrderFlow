@@ -54,6 +54,12 @@ namespace OrderFlow.Web.Controllers
             return View(orders);
         }
 
+
+        /// <summary>
+        /// Updates the status of an order.
+        /// Accessible to users with "Admin", "Customer", or "Courier" roles.
+        /// Sends a request to the API to update the order status and returns whether the operation was successful.
+        /// </summary>
         [HttpPut("orders/update-status")]
         [RoleAuthorize("Admin", "Customer", "Courier")]
         public async Task<bool> UpdateStatus([FromBody] UpdateOrderStatusRequest updateOrderStatusRequest)

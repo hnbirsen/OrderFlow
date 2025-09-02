@@ -12,6 +12,7 @@ namespace OrderFlow.Persistence.Context
         public DbSet<UserEntity> Users { get; set; }
         public DbSet<OrderEntity> Orders { get; set; }
         public DbSet<OrderStatusHistoryEntity> OrderStatusHistories { get; set; }
+        public DbSet<OrderAssignmentEntity> OrderAssignments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -10,17 +10,20 @@ namespace OrderFlow.Persistence.Repositories
         public IOrderRepository Orders { get; }
         public IUserRepository Users { get; }
         public IOrderStatusHistoryRepository OrderStatusHistories { get; }
+        public IOrderAssignmentRepository OrderAssignments { get; }
 
         public UnitOfWork(
             OrderFlowDbContext context,
             IOrderRepository orders,
             IUserRepository users,
-            IOrderStatusHistoryRepository orderStatusHistories)
+            IOrderStatusHistoryRepository orderStatusHistories,
+            IOrderAssignmentRepository orderAssignments)
         {
             _context = context;
             Orders = orders;
             Users = users;
             OrderStatusHistories = orderStatusHistories;
+            OrderAssignments = orderAssignments;
         }
 
         public async Task<int> SaveChangesAsync()

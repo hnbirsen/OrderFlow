@@ -7,6 +7,7 @@ namespace OrderFlow.Domain.Interfaces
         IOrderRepository Orders { get; }
         IUserRepository Users { get; }
         IOrderStatusHistoryRepository OrderStatusHistories { get; }
+        IOrderAssignmentRepository OrderAssignments { get; }
 
         Task<int> SaveChangesAsync();
     }
