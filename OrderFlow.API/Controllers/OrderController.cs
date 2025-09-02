@@ -57,19 +57,19 @@ namespace OrderFlow.API.Controllers
         /// </summary>
         /// <param name="orderId">Order identifier.</param>
         /// <param name="status">New status value.</param>
-        [HttpGet("update-status")]
-        public async Task<IActionResult> UpdateStatus(Guid orderId, string status)
+        [HttpPut("update-status")]
+        public async Task<IActionResult> UpdateStatus([FromBody] UpdateOrderStatusRequest updateOrderStatusRequest)
         {
             _logger.LogInformation("Entering UpdateStatus method.");
-            _logger.LogInformation("UpdateStatus requested for orderId: {OrderId} with status: {Status}", orderId, status);
-            var result = await _orderService.UpdateOrderStatusAsync(orderId, status);
+            _logger.LogInformation("UpdateStatus requested for orderId: {OrderId} with status: {Status}", updateOrderStatusRequest.OrderId, updateOrderStatusRequest.NewStatus);
+            var result = await _orderService.UpdateOrderStatusAsync(updateOrderStatusRequest.OrderId, updateOrderStatusRequest.NewStatus);
             if (!result)
             {
-                _logger.LogWarning("Failed to update status for orderId: {OrderId}", orderId);
+                _logger.LogWarning("Failed to update status for orderId: {OrderId}", updateOrderStatusRequest.OrderId);
                 _logger.LogInformation("Exiting UpdateStatus method.");
                 return BadRequest("Failed to update order status.");
             }
-            _logger.LogInformation("Order status updated for orderId: {OrderId}", orderId);
+            _logger.LogInformation("Order status updated for orderId: {OrderId}", updateOrderStatusRequest.OrderId);
             _logger.LogInformation("Exiting UpdateStatus method.");
             return Ok();
         }
@@ -79,7 +79,7 @@ namespace OrderFlow.API.Controllers
         /// </summary>
         /// <param name="id">Order identifier.</param>
         [HttpGet("get/{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetById(int id)
         {
             _logger.LogInformation("Entering GetById method.");
             _logger.LogInformation("GetById requested for orderId: {OrderId}", id);
@@ -101,12 +101,12 @@ namespace OrderFlow.API.Controllers
         /// <param name="request">Order creation request data.</param>
         [HttpPost("create")]
         [Authorize(Roles = "Customer")]
-        public async Task<IActionResult> Create([FromBody] CreateOrderRequest request)
+        public async Task<IActionResult> Create([FromBody] CreateOrderRequest createOrderRequest)
         {
             _logger.LogInformation("Entering Create method.");
-            _logger.LogInformation("Create order requested by userId: {UserId}", request.UserId);
-            await _orderService.CreateOrderAsync(request);
-            _logger.LogInformation("Order created for userId: {UserId}", request.UserId);
+            _logger.LogInformation("Create order requested by userId: {UserId}", createOrderRequest.UserId);
+            await _orderService.CreateOrderAsync(createOrderRequest);
+            _logger.LogInformation("Order created for userId: {UserId}", createOrderRequest.UserId);
             _logger.LogInformation("Exiting Create method.");
             return Created("", null);
         }

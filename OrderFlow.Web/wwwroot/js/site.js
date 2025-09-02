@@ -12,7 +12,6 @@ const el = (tag, cls, text) => {
 };
 
 const statusClass = (s) => {
-	debugger;
 	if (!s) return '';
 	if (s === 'New') return 'new';
 	if (s === 'Processing') return 'processing';
@@ -26,7 +25,7 @@ const statusClass = (s) => {
 // ===== State =================================================================
 let state = {
 	orders: [...initialOrders],
-	selectedId: initialOrders[0]?.id ?? null,
+	selectedId: initialOrders[initialOrders.length - 1]?.id ?? null,
 	statusFilter: 'all',
 	sortBy: 'date-desc'
 };
@@ -36,7 +35,7 @@ function renderOrders(orders = null) {
 	// Update state if new orders provided
 	if (orders) {
 		state.orders = [...orders];
-		state.selectedId = orders[0]?.id ?? null;
+		state.selectedId = orders[orders.length - 1]?.id ?? null;
 	}
 	const list = document.getElementById('ordersBody');
 	if (!list) return;
@@ -165,6 +164,42 @@ function renderDetail(order) {
 
 	var detailTotalEl = document.getElementById('detailTotal');
 	if (detailTotalEl) detailTotalEl.textContent = '';
+
+	['detail-process', 'detail-ship', 'detail-track', 'detail-refund'].forEach(id => {
+		var btn = document.getElementById(id);
+		if (btn) btn.hidden = true;
+	});
+
+	switch (order.status) {
+		case 'New':
+			var btn = document.getElementById('detail-process');
+			if (btn) btn.hidden = false;
+			break;
+        case 'Processing':
+			var btn = document.getElementById('detail-ship');
+			if (btn) btn.hidden = false;
+			break;
+		case 'Sent':
+			var btn = document.getElementById('detail-track');
+			if (btn) btn.hidden = false;
+			break;
+		case 'Completed':
+			var btn = document.getElementById('detail-refund');
+			if (btn) btn.hidden = false;
+			break;
+		default:
+			break;
+	}
+}
+
+const detailCta = document.querySelector('.detail-cta');
+if (detailCta) {
+	detailCta.querySelectorAll('button').forEach(function (btn) {
+		btn.onclick = function () {
+			const newStatus = btn.getAttribute('data-new-status');
+			if (newStatus) updateStatus(newStatus);
+		};
+	});
 }
 
 // Normalize incoming data (OrderDto) in a case-insensitive way
@@ -282,4 +317,30 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initSidebarToggle);
 } else {
     initSidebarToggle();
+}
+
+function updateStatus(newStatus) {
+	if (!state.selectedId) return;
+	const order = state.orders.find(o => o.id === state.selectedId);
+	if (!order) return;
+
+	// Send status update to server
+	fetch(`/orders/update-status`, {
+		method: 'PUT',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({
+			OrderId: state.selectedId,
+			NewStatus: newStatus
+		})
+	})
+	.then(response => {
+		if (!response.ok) throw new Error('Network response was not ok');
+		return response.json();
+	})
+	.then(data => {
+		// Optionally handle server response
+	})
+	.catch(error => {
+		console.error('Error updating status:', error);
+	});
 }

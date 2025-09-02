@@ -54,6 +54,15 @@ namespace OrderFlow.Web.Controllers
             return View(orders);
         }
 
+        [HttpPut("orders/update-status")]
+        [RoleAuthorize("Admin", "Customer", "Courier")]
+        public async Task<bool> UpdateStatus([FromBody] UpdateOrderStatusRequest updateOrderStatusRequest)
+        {
+            var httpResponse = await _apiRequestHelper.SendAsync($"/api/order/update-status", HttpMethod.Put, updateOrderStatusRequest);
+
+            return httpResponse.IsSuccessStatusCode;
+        }
+
         /// <summary>
         /// Displays the order tracking view.
         /// Accessible to users with "Admin" or "Customer" roles.

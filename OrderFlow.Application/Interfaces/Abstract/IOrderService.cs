@@ -6,9 +6,9 @@ namespace OrderFlow.Application.Interfaces.Abstract
     public interface IOrderService : IScoped
     {
         Task<IEnumerable<OrderDto>> GetAllOrdersAsync();
-        Task<OrderDto?> GetOrderByIdAsync(Guid id);
+        Task<OrderDto?> GetOrderByIdAsync(int id);
         Task CreateOrderAsync(CreateOrderRequest request);
         Task<OrderDto?> GetOrderByTrackingCodeAsync(string trackingCode);
-        Task<bool> UpdateOrderStatusAsync(Guid orderId, string status);
+        Task<bool> UpdateOrderStatusAsync(int orderId, int status);
     }
 }

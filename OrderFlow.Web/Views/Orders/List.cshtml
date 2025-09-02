@@ -26,28 +26,13 @@
 					</div>
 				</div>
 
-
 				<div class="icon-group" role="group" aria-label="Quick actions">
-					<button class="icon-btn" title="Refresh" type="button">⟳</button>
-					<button class="icon-btn" title="Views" type="button">☰</button>
-					<button class="icon-btn" title="Search" type="button">🔎</button>
+				  <button class="icon-btn" title="Refresh" type="button" onclick="location.reload();">⟳</button>
 				</div>
 			</div>
 		</div>
 
 		<div class="right-actions">
-			<div class="sort">
-				<button id="sortBtn" class="select" data-menu="sortMenu" type="button">
-					<span id="sortLabel">Sort by Date</span>
-					<span class="caret" aria-hidden="true">▾</span>
-				</button>
-				<div id="sortMenu" class="menu" role="menu" aria-hidden="true">
-					<button data-value="date-desc" class="menu-item" role="menuitem">Date (newest)</button>
-					<button data-value="date-asc" class="menu-item" role="menuitem">Date (oldest)</button>
-
-				</div>
-			</div>
-
 			<div class="user">
 				<div class="avatar" style="--bg:#FDE68A">K</div>
 				<div class="user-info">
@@ -108,10 +93,14 @@
 		<div id="detailTotal" class="total-amount">$—</div>
 	</div>
 
-	<div class="detail-cta">
-		<button class="btn btn-dark" type="button">Track</button>
-		<button class="btn btn-ghost" type="button">Refund ↺</button>
-	</div>
+    <div class="detail-cta">
+		<button class="btn btn-dark" hidden id="detail-ship" data-new-status="2" type="button">Update as Shipped</button>
+		<button class="btn btn-dark" hidden id="detail-process" data-new-status="1" type="button">Update as Processing</button>
+		<button class="btn btn-dark" hidden id="detail-completed" data-new-status="3" type="button">Update as Completed</button>
+		<button class="btn btn-dark" hidden id="detail-cancel" data-new-status="4" type="button">Cancel Order</button>
+		<button class="btn btn-ghost" hidden id="detail-refund" data-new-status="5" type="button">Refund ↺</button>
+		<button class="btn btn-dark" hidden id="detail-track" type="button">Track</button>
+    </div>
 </aside>
 
 <script>
@@ -126,7 +115,6 @@
 
 @section Scripts {
 	<script>
-		// Initialize orders display when page loads
 		document.addEventListener('DOMContentLoaded', function() {
 			if (typeof renderOrders === 'function' && window.demoOrders) {
 				renderOrders(window.demoOrders);

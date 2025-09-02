@@ -30,7 +30,7 @@ namespace OrderFlow.Application.Interfaces.Concrete
             });
         }
 
-        public async Task<OrderDto?> GetOrderByIdAsync(Guid id)
+        public async Task<OrderDto?> GetOrderByIdAsync(int id)
         {
             var order = await _orderRepository.GetByIdAsync(id);
             if (order == null) return null;
@@ -80,12 +80,15 @@ namespace OrderFlow.Application.Interfaces.Concrete
             };
         }
 
-        public async Task<bool> UpdateOrderStatusAsync(Guid orderId, string status)
+        public async Task<bool> UpdateOrderStatusAsync(int orderId, int status)
         {
             var order = await _orderRepository.GetByIdAsync(orderId);
             if (order == null) return false;
 
-            order.Status = Enum.TryParse<OrderStatusEnum>(status, out var newStatus) ? newStatus : order.Status;
+            order.Status = Enum.IsDefined(typeof(OrderStatusEnum), status)
+                ? (OrderStatusEnum)status
+                : order.Status;
+
             _orderRepository.Update(order);
             return await _orderRepository.CompleteAsync();
         }
