@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using OrderFlow.Application.DTOs;
 using OrderFlow.Application.Interfaces.Abstract;
 

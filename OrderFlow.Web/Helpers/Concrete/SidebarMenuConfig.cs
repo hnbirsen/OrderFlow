@@ -1,5 +1,5 @@
-using System.Reflection;
 using OrderFlow.Web.Middlewares;
+using System.Reflection;
 
 namespace OrderFlow.Web.Helpers.Concrete
 {

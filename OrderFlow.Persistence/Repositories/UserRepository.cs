@@ -1,5 +1,5 @@
-﻿using OrderFlow.Domain.Interfaces;
-using OrderFlow.Domain.Entities;
+﻿using OrderFlow.Domain.Entities;
+using OrderFlow.Domain.Interfaces;
 using OrderFlow.Persistence.Context;
 
 namespace OrderFlow.Persistence.Repositories
@@ -14,7 +14,7 @@ namespace OrderFlow.Persistence.Repositories
         public async Task UpdateLastLogin(int userId)
         {
             var user = await _context.Users.FindAsync(userId);
-            
+
             if (user != null)
             {
                 user.LastLogin = DateTime.UtcNow;

@@ -5,7 +5,7 @@ namespace OrderFlow.Persistence.Context
 {
     public class OrderFlowDbContext : DbContext
     {
-        public OrderFlowDbContext(DbContextOptions<OrderFlowDbContext> options): base(options)
+        public OrderFlowDbContext(DbContextOptions<OrderFlowDbContext> options) : base(options)
         {
         }
 

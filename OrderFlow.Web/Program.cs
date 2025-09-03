@@ -1,7 +1,7 @@
-using Serilog;
 using OrderFlow.Web.Helpers.Abstract;
 using OrderFlow.Web.Helpers.Concrete;
 using OrderFlow.Web.Middlewares;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 

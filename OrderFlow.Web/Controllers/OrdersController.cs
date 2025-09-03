@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrderFlow.Application.DTOs;
 using OrderFlow.Domain.Constants;
@@ -16,7 +15,7 @@ namespace OrderFlow.Web.Controllers
     {
         private readonly ILogger<OrdersController> _logger;
         private readonly IApiRequestHelper _apiRequestHelper;
-        
+
         public OrdersController(ILogger<OrdersController> logger, IApiRequestHelper apiRequestHelper)
         {
             _logger = logger;
@@ -46,7 +45,7 @@ namespace OrderFlow.Web.Controllers
 
             if (!httpResponse.IsSuccessStatusCode)
                 return View();
-            
+
             var json = await httpResponse.Content.ReadAsStringAsync();
             var orders = JsonSerializer.Deserialize<IEnumerable<OrderDto>>(json, new JsonSerializerOptions
             {

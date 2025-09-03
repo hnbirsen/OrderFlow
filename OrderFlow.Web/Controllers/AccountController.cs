@@ -93,7 +93,7 @@ namespace OrderFlow.Web.Controllers
                 }
 
                 var userId = ParseUserIdFromJwt(loginResponse.AccessToken);
-                if (string.IsNullOrEmpty(userId)) 
+                if (string.IsNullOrEmpty(userId))
                 {
                     _logger.LogError("User ID not found in token for user: {Email}", model.Email);
                     ViewBag.Error = "User ID not found. Please contact support.";

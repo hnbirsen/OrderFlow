@@ -1,8 +1,8 @@
-﻿using OrderFlow.Application.DTOs;
+﻿using Microsoft.Extensions.Logging;
+using OrderFlow.Application.DTOs;
 using OrderFlow.Application.Interfaces.Abstract;
 using OrderFlow.Domain.Entities;
 using OrderFlow.Domain.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace OrderFlow.Application.Interfaces.Concrete
 {
@@ -74,5 +74,5 @@ namespace OrderFlow.Application.Interfaces.Concrete
             _logger.LogInformation("Exiting GetActiveAssignmentByOrderIdAsync method.");
             return assignment;
         }
-    }    
+    }
 }

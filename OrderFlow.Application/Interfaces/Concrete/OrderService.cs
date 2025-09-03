@@ -1,9 +1,9 @@
-﻿using OrderFlow.Application.DTOs;
+﻿using Microsoft.Extensions.Logging;
+using OrderFlow.Application.DTOs;
 using OrderFlow.Application.Interfaces.Abstract;
 using OrderFlow.Domain.Entities;
 using OrderFlow.Domain.Enums;
 using OrderFlow.Domain.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace OrderFlow.Application.Interfaces.Concrete
 {
@@ -189,5 +189,5 @@ namespace OrderFlow.Application.Interfaces.Concrete
             _logger.LogInformation("Exiting UpdateOrderStatusAsync method.");
             return result > 0;
         }
-    }    
+    }
 }

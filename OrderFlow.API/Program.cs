@@ -1,10 +1,10 @@
-using Serilog;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OrderFlow.Application.Configuration;
 using OrderFlow.Persistence.Context;
+using Serilog;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -1,9 +1,9 @@
-﻿using OrderFlow.Application.DTOs;
+﻿using Microsoft.Extensions.Logging;
+using OrderFlow.Application.DTOs;
 using OrderFlow.Application.Interfaces.Abstract;
 using OrderFlow.Domain.Entities;
 using OrderFlow.Domain.Helpers;
 using OrderFlow.Domain.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace OrderFlow.Application.Interfaces.Concrete
 {
