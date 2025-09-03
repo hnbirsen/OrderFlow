@@ -15,6 +15,5 @@ namespace OrderFlow.Domain.Interfaces
         void UpdateRange(IEnumerable<T> entities);
         void Remove(T entity);
         void RemoveRange(IEnumerable<T> entities);
-        Task<bool> CompleteAsync();
     }
 }

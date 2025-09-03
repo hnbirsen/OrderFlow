@@ -43,8 +43,5 @@ namespace OrderFlow.Persistence.Repositories
 
         public void RemoveRange(IEnumerable<T> entities)
             => _dbSet.RemoveRange(entities);
-
-        public async Task<bool> CompleteAsync()
-            => await _context.SaveChangesAsync() > 0;
     }
 }

@@ -10,5 +10,6 @@ namespace OrderFlow.Application.Interfaces.Abstract
         Task CreateOrderAsync(CreateOrderRequest request);
         Task<OrderDto?> GetOrderByTrackingCodeAsync(string trackingCode);
         Task<bool> UpdateOrderStatusAsync(int orderId, int status);
+        Task<IEnumerable<OrderDto>> GetOrdersByIdsAsync(IEnumerable<int> orderIds);
     }
 }

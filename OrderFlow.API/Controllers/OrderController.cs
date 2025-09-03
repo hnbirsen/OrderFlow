@@ -150,13 +150,8 @@ namespace OrderFlow.API.Controllers
             _logger.LogInformation("Entering GetAssignedOrdersByCourierId method.");
             _logger.LogInformation("GetAssignedOrdersByCourierId requested for courierId: {CourierId}", courierId);
 
-            // Get assignments for the courier
             var orderAssignments = await _orderAssignmentService.GetByCourierIdAsync(courierId);
-
-            // Get order IDs from assignments
             var orderIds = orderAssignments.Select(x => x.OrderId).ToList();
-
-            // If no assignments, return empty list
             if (!orderIds.Any())
             {
                 _logger.LogInformation("No assigned orders found for courierId: {CourierId}", courierId);
@@ -164,11 +159,9 @@ namespace OrderFlow.API.Controllers
                 return Ok(new List<OrderDto>());
             }
 
-            // Get all orders and filter by assigned IDs
-            var allOrders = await _orderService.GetAllOrdersAsync();
-            var assignedOrders = allOrders.Where(o => orderIds.Contains(o.Id)).ToList();
+            var assignedOrders = await _orderService.GetOrdersByIdsAsync(orderIds);
 
-            _logger.LogInformation("{Count} assigned orders returned for courierId: {CourierId}", assignedOrders.Count, courierId);
+            _logger.LogInformation("{Count} assigned orders returned for courierId: {CourierId}", assignedOrders.Count(), courierId);
             _logger.LogInformation("Exiting GetAssignedOrdersByCourierId method.");
 
             return Ok(assignedOrders);

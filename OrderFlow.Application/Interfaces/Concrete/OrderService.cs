@@ -37,6 +37,30 @@ namespace OrderFlow.Application.Interfaces.Concrete
             });
         }
 
+        public async Task<IEnumerable<OrderDto>> GetOrdersByIdsAsync(IEnumerable<int> orderIds)
+        {
+            if (orderIds == null)
+            {
+                return Enumerable.Empty<OrderDto>();
+            }
+            var ids = orderIds.Where(id => id > 0).Distinct().ToList();
+            if (!ids.Any())
+            {
+                return Enumerable.Empty<OrderDto>();
+            }
+
+            var orders = await _unitOfWork.Orders.FindAsync(o => ids.Contains(o.Id));
+            return orders.Select(o => new OrderDto
+            {
+                Id = o.Id,
+                Description = o.Description,
+                TrackingCode = o.TrackingCode ?? string.Empty,
+                Items = o.Items ?? new Dictionary<string, int>(),
+                Status = o.Status,
+                CreatedAt = o.CreatedAt
+            });
+        }
+
         public async Task<OrderDto?> GetOrderByIdAsync(int id)
         {
             if (id <= 0)
