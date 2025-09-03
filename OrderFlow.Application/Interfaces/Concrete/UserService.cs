@@ -9,19 +9,19 @@ namespace OrderFlow.Application.Interfaces.Concrete
 {
     public class UserService : IUserService
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<UserService> _logger;
 
-        public UserService(IUserRepository userRepository, ILogger<UserService> logger)
+        public UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger)
         {
-            _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
             _logger = logger;
         }
 
         public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
         {
             _logger.LogInformation("Entering GetAllUsersAsync method.");
-            var users = await _userRepository.GetAllAsync();
+            var users = await _unitOfWork.Users.GetAllAsync();
             _logger.LogInformation("{Count} users fetched from repository.", users?.Count() ?? 0);
             _logger.LogInformation("Exiting GetAllUsersAsync method.");
             return users.Select(u => new UserDto
@@ -36,6 +36,11 @@ namespace OrderFlow.Application.Interfaces.Concrete
 
         public async Task<bool> CreateUserAsync(CreateUserRequest request)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             _logger.LogInformation("Entering CreateUserAsync method for email: {Email}, role: {Role}", request.Email, request.Role);
             var user = new UserEntity
             {
@@ -53,17 +58,17 @@ namespace OrderFlow.Application.Interfaces.Concrete
                 Password = AesEncryptionHelper.Encrypt(PasswordGenerator.Generate()),
                 CreatedAt = DateTime.UtcNow
             };
-            await _userRepository.AddAsync(user);
-            var result = await _userRepository.CompleteAsync();
-            _logger.LogInformation("User creation result: {Result}", result);
+            await _unitOfWork.Users.AddAsync(user);
+            var result = await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation("User creation result: {Result}", result > 0);
             _logger.LogInformation("Exiting CreateUserAsync method.");
-            return result;
+            return result > 0;
         }
 
         public async Task<int> GetAvailableCourierId()
         {
             _logger.LogInformation("Entering GetAvailableCourierId method.");
-            var couriers = await _userRepository.FindAsync(u => u.Role == Domain.Enums.UserRoleEnum.Courier && u.Status == Domain.Enums.StatusEnum.Active);
+            var couriers = await _unitOfWork.Users.FindAsync(u => u.Role == Domain.Enums.UserRoleEnum.Courier && u.Status == Domain.Enums.StatusEnum.Active);
             if (!couriers.Any())
             {
                 _logger.LogWarning("No active couriers found.");

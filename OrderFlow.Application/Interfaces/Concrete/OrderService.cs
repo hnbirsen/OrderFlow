@@ -9,15 +9,13 @@ namespace OrderFlow.Application.Interfaces.Concrete
 {
     public class OrderService : IOrderService
     {
-        private readonly IOrderRepository _orderRepository;
-        private readonly IOrderAssignmentRepository _orderAssignmentRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IUserService _userService;
         private readonly ILogger<OrderService> _logger;
 
-        public OrderService(IOrderRepository orderRepository, IOrderAssignmentRepository orderAssignmentRepository, IUserService userService, ILogger<OrderService> logger)
+        public OrderService(IUnitOfWork unitOfWork, IUserService userService, ILogger<OrderService> logger)
         {
-            _orderRepository = orderRepository;
-            _orderAssignmentRepository = orderAssignmentRepository;
+            _unitOfWork = unitOfWork;
             _userService = userService;
             _logger = logger;
         }
@@ -25,7 +23,7 @@ namespace OrderFlow.Application.Interfaces.Concrete
         public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync()
         {
             _logger.LogInformation("Entering GetAllOrdersAsync method.");
-            var orders = await _orderRepository.GetAllAsync();
+            var orders = await _unitOfWork.Orders.GetAllAsync();
             _logger.LogInformation("{Count} orders fetched from repository.", orders?.Count() ?? 0);
             _logger.LogInformation("Exiting GetAllOrdersAsync method.");
             return orders.Select(o => new OrderDto
@@ -41,8 +39,14 @@ namespace OrderFlow.Application.Interfaces.Concrete
 
         public async Task<OrderDto?> GetOrderByIdAsync(int id)
         {
+            if (id <= 0)
+            {
+                _logger.LogWarning("Invalid id: {Id}", id);
+                return null;
+            }
+
             _logger.LogInformation("Entering GetOrderByIdAsync method with id: {Id}", id);
-            var order = await _orderRepository.GetByIdAsync(id);
+            var order = await _unitOfWork.Orders.GetByIdAsync(id);
             if (order == null)
             {
                 _logger.LogWarning("Order not found for id: {Id}", id);
@@ -64,6 +68,15 @@ namespace OrderFlow.Application.Interfaces.Concrete
 
         public async Task CreateOrderAsync(CreateOrderRequest request)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+            if (request.UserId <= 0)
+            {
+                throw new ArgumentException("UserId must be positive.", nameof(request.UserId));
+            }
+
             _logger.LogInformation("Entering CreateOrderAsync method for userId: {UserId}", request.UserId);
             var entity = new OrderEntity
             {
@@ -74,16 +87,22 @@ namespace OrderFlow.Application.Interfaces.Concrete
                 Status = OrderStatusEnum.New,
                 CreatedAt = DateTime.UtcNow
             };
-            await _orderRepository.AddAsync(entity);
-            await _orderRepository.CompleteAsync();
+            await _unitOfWork.Orders.AddAsync(entity);
+            await _unitOfWork.SaveChangesAsync();
             _logger.LogInformation("Order created for userId: {UserId}", request.UserId);
             _logger.LogInformation("Exiting CreateOrderAsync method.");
         }
 
         public async Task<OrderDto?> GetOrderByTrackingCodeAsync(string trackingCode)
         {
+            if (string.IsNullOrWhiteSpace(trackingCode))
+            {
+                _logger.LogWarning("Empty tracking code provided.");
+                return null;
+            }
+
             _logger.LogInformation("Entering GetOrderByTrackingCodeAsync method with trackingCode: {TrackingCode}", trackingCode);
-            var result = await _orderRepository.FindAsync(o => o.TrackingCode == trackingCode);
+            var result = await _unitOfWork.Orders.FindAsync(o => o.TrackingCode == trackingCode);
             if (result == null)
             {
                 _logger.LogWarning("No orders found for trackingCode: {TrackingCode}", trackingCode);
@@ -112,8 +131,14 @@ namespace OrderFlow.Application.Interfaces.Concrete
 
         public async Task<bool> UpdateOrderStatusAsync(int orderId, int status)
         {
+            if (orderId <= 0)
+            {
+                _logger.LogWarning("Invalid orderId: {OrderId}", orderId);
+                return false;
+            }
+
             _logger.LogInformation("Entering UpdateOrderStatusAsync method for orderId: {OrderId} with status: {Status}", orderId, status);
-            var order = await _orderRepository.GetByIdAsync(orderId);
+            var order = await _unitOfWork.Orders.GetByIdAsync(orderId);
             if (order == null)
             {
                 _logger.LogWarning("Order not found for orderId: {OrderId}", orderId);
@@ -123,11 +148,11 @@ namespace OrderFlow.Application.Interfaces.Concrete
             order.Status = Enum.IsDefined(typeof(OrderStatusEnum), status)
                 ? (OrderStatusEnum)status
                 : order.Status;
-            _orderRepository.Update(order);
+            _unitOfWork.Orders.Update(order);
             if (order.Status == OrderStatusEnum.Sent)
             {
                 var courierId = await _userService.GetAvailableCourierId();
-                await _orderAssignmentRepository.AddAsync(new OrderAssignmentEntity
+                await _unitOfWork.OrderAssignments.AddAsync(new OrderAssignmentEntity
                 {
                     OrderId = order.Id,
                     CourierId = courierId,
@@ -135,10 +160,10 @@ namespace OrderFlow.Application.Interfaces.Concrete
                 });
                 _logger.LogInformation("Order assigned to courierId: {CourierId}", courierId);
             }
-            var result = await _orderRepository.CompleteAsync();
+            var result = await _unitOfWork.SaveChangesAsync();
             _logger.LogInformation("Order status updated for orderId: {OrderId}", orderId);
             _logger.LogInformation("Exiting UpdateOrderStatusAsync method.");
-            return result;
+            return result > 0;
         }
     }    
 }
