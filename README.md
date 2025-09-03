@@ -9,6 +9,7 @@ OrderFlow is a modular .NET solution for order management with a Web MVC front e
 - OrderFlow.Persistence: EF Core context, configurations, repositories, migrations
 - OrderFlow.Domain: Entities, enums, interfaces, helpers
 - OrderFlow.Web: ASP.NET Core MVC app (UI), session auth, role-aware navigation
+- OrderFlow.Tests: xUnit-based unit tests for API, Application, and Persistence layers
 
 ## Architecture
 
@@ -88,12 +89,39 @@ Alternatively, configure your IDE to run migrations with `OrderFlow.API` as star
   - `Context/OrderFlowDbContext.cs`, `Migrations/*`, `Repositories/*`
 - Domain
   - `Entities/*`, `Enums/*` (`UserRoleEnum`, `OrderStatusEnum`), `Helpers/*`
+- Tests
+  - `OrderFlow.Tests`: xUnit-based unit tests for API, Application, and Persistence
 
 ## Development Tips
 
 - Logs: Each project writes logs to its configured sinks (Serilog in Web)
 - Adjust CORS for API if hosting separately from Web
 - Ensure JWT role claim type matches `ClaimTypes.Role` in Web
+
+## Unit Testing
+
+Unit tests are located in the `OrderFlow.Tests` project. The test suite uses xUnit and EF Core InMemory for fast, isolated tests. To run all tests:
+
+```bash
+dotnet test OrderFlow.Tests
+```
+
+Test coverage is collected using `coverlet.collector`.
+
+### Example Test
+
+```csharp
+[Fact]
+public async Task GetOrder_ReturnsOrder()
+{
+    // Arrange
+    var service = new OrderService(/* dependencies */);
+    // Act
+    var result = await service.GetOrderAsync(1);
+    // Assert
+    Assert.NotNull(result);
+}
+```
 
 ## Troubleshooting
 
@@ -122,4 +150,12 @@ dotnet ef migrations add AddNewColumns --project OrderFlow.Persistence --startup
 # Update database
 dotnet ef database update --project OrderFlow.Persistence --startup-project OrderFlow.API
 ```
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first.
+
+## License
+
+MIT
 
