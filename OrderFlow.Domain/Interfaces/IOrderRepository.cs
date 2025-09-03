@@ -5,6 +5,5 @@ namespace OrderFlow.Domain.Interfaces
 {
     public interface IOrderRepository : IBaseRepository<OrderEntity>, IScoped
     {
-        Task<IEnumerable<OrderEntity>> GetOrdersByUserIdAsync(int userId);
     }
 }

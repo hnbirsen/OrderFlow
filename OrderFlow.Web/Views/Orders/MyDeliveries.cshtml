@@ -1,7 +1,14 @@
+@using OrderFlow.Application.DTOs
+@model IEnumerable<OrderDto>
+
+@{
+	var orders = Model.ToArray();
+}
+
 <main class="main">
 	<header class="toolbar">
 		<div class="title-area">
-			<h1 class="title">My Deliveries</h1>
+			<h1 class="title">Orders</h1>
 			<div class="filters">
 				<div class="field">
 					<button id="statusBtn" class="select" data-menu="statusMenu" type="button">
@@ -10,47 +17,22 @@
 					</button>
 					<div id="statusMenu" class="menu" role="menu" aria-hidden="true">
 						<button data-value="all" class="menu-item" role="menuitem">Any status</button>
-						<button data-value="Paid" class="menu-item" role="menuitem">Paid</button>
+						<button data-value="New" class="menu-item" role="menuitem">New</button>
+						<button data-value="Processing" class="menu-item" role="menuitem">Processing</button>
+						<button data-value="Sent" class="menu-item" role="menuitem">Sent</button>
 						<button data-value="Completed" class="menu-item" role="menuitem">Completed</button>
-						<button data-value="Delivered" class="menu-item" role="menuitem">Delivered</button>
-					</div>
-				</div>
-
-				<div class="field">
-					<button id="amountBtn" class="select" data-menu="amountMenu" type="button">
-						<span id="amountLabel">$100—$1500</span>
-						<span class="caret" aria-hidden="true">▾</span>
-					</button>
-					<div id="amountMenu" class="menu" role="menu" aria-hidden="true">
-						<button data-value="all" class="menu-item" role="menuitem">Any amount</button>
-						<button data-value="0-500" class="menu-item" role="menuitem">$0—$500</button>
-						<button data-value="500-1000" class="menu-item" role="menuitem">$500—$1000</button>
-						<button data-value="1000-2000" class="menu-item" role="menuitem">$1000—$2000</button>
+						<button data-value="Cancelled" class="menu-item" role="menuitem">Cancelled</button>
+						<button data-value="Refunded" class="menu-item" role="menuitem">Refunded</button>
 					</div>
 				</div>
 
 				<div class="icon-group" role="group" aria-label="Quick actions">
-					<button class="icon-btn" title="Refresh" type="button">⟳</button>
-					<button class="icon-btn" title="Views" type="button">☰</button>
-					<button class="icon-btn" title="Search" type="button">🔎</button>
+				  <button class="icon-btn" title="Refresh" type="button" onclick="location.reload();">⟳</button>
 				</div>
 			</div>
 		</div>
 
 		<div class="right-actions">
-			<div class="sort">
-				<button id="sortBtn" class="select" data-menu="sortMenu" type="button">
-					<span id="sortLabel">Sort by Date</span>
-					<span class="caret" aria-hidden="true">▾</span>
-				</button>
-				<div id="sortMenu" class="menu" role="menu" aria-hidden="true">
-					<button data-value="date-desc" class="menu-item" role="menuitem">Date (newest)</button>
-					<button data-value="date-asc" class="menu-item" role="menuitem">Date (oldest)</button>
-					<button data-value="total-desc" class="menu-item" role="menuitem">Total (high)</button>
-					<button data-value="total-asc" class="menu-item" role="menuitem">Total (low)</button>
-				</div>
-			</div>
-
 			<div class="user">
 				<div class="avatar" style="--bg:#FDE68A">K</div>
 				<div class="user-info">
@@ -68,9 +50,9 @@
 					<input id="masterCheck" type="checkbox" />
 				</div>
 				<div class="col">Order</div>
-				<div class="col">Customer</div>
+				<div class="col">Description</div>
 				<div class="col">Status</div>
-				<div class="col col-right">Total</div>
+				<div class="col">Items</div>
 				<div class="col">Date</div>
 				<div class="col col-kebab" aria-hidden="true">⋯</div>
 			</div>
@@ -111,146 +93,28 @@
 		<div id="detailTotal" class="total-amount">$—</div>
 	</div>
 
-	<div class="detail-cta">
-		<button class="btn btn-dark" type="button">Track</button>
-		<button class="btn btn-ghost" type="button">Refund ↺</button>
-	</div>
+    <div class="detail-cta">
+		<button class="btn btn-dark" hidden id="detail-ship" data-new-status="2" type="button">Update as Shipped</button>
+		<button class="btn btn-dark" hidden id="detail-process" data-new-status="1" type="button">Update as Processing</button>
+		<button class="btn btn-dark" hidden id="detail-completed" data-new-status="3" type="button">Update as Completed</button>
+		<button class="btn btn-dark" hidden id="detail-cancel" data-new-status="4" type="button">Cancel Order</button>
+		<button class="btn btn-ghost" hidden id="detail-refund" data-new-status="5" type="button">Refund ↺</button>
+		<button class="btn btn-dark" hidden id="detail-track" type="button">Track</button>
+    </div>
 </aside>
 
 <script>
-	window.demoOrders = [
-		{
-			id: '#390561',
-			customer: { name: 'James Miller', initials: 'JM', color: '#fde68a' },
-			status: 'Paid',
-			total: 1620,
-			date: '2025-01-08T13:52:00Z',
-			items: [
-				{ title: 'Ryobi ONE drill/driver', price: 409 },
-				{ title: 'Socket Systeme Electric', price: 238 },
-				{ title: 'DVB-T2 receiver bbk', price: 139 },
-				{ title: 'Inforce oil-free compressor', price: 135 },
-				{ title: 'TIG-200 welding inverter', price: 699 }
-			]
-		},
-		{
-			id: '#663334',
-			customer: { name: 'Janice Chandler', initials: 'JC', color: '#c7d2fe' },
-			status: 'Delivered',
-			total: 1250,
-			date: '2025-01-06T10:15:00Z',
-			items: [
-				{ title: 'Bosch circular saw', price: 520 },
-				{ title: 'Makita screwdriver set', price: 210 },
-				{ title: 'Safety goggle pack', price: 34 },
-				{ title: 'Portable work light', price: 86 },
-				{ title: 'Storage organizer', price: 400 }
-			]
-		},
-		{
-			id: '#418135',
-			customer: { name: 'Mildred Hall', initials: 'MH', color: '#bbf7d0' },
-			status: 'Paid',
-			total: 540.95,
-			date: '2025-01-05T09:02:00Z',
-			items: [
-				{ title: 'Clamping kit', price: 110.95 },
-				{ title: 'Precision bits', price: 90 },
-				{ title: 'Workbench mat', price: 58 },
-				{ title: 'Bench vise', price: 282 }
-			]
-		},
-		{
-			id: '#801999',
-			customer: { name: 'Ana Carter', initials: 'AC', color: '#fecaca' },
-			status: 'Paid',
-			total: 1489,
-			date: '2025-01-02T12:10:00Z',
-			items: [
-				{ title: 'Table saw', price: 1220 },
-				{ title: 'Featherboard', price: 69 },
-				{ title: 'Zero-clearance insert', price: 55 },
-				{ title: 'Push blocks (pair)', price: 145 }
-			]
-		},
-		{
-			id: '#517783',
-			customer: { name: 'John Sherman', initials: 'JS', color: '#fde68a' },
-			status: 'Completed',
-			total: 925,
-			date: '2024-12-28T14:12:00Z',
-			items: [
-				{ title: 'Router lift', price: 540 },
-				{ title: 'Dust collection hose', price: 85 },
-				{ title: 'Hose clamps (10)', price: 30 },
-				{ title: 'HEPA filter', price: 270 }
-			]
-		},
-		{
-			id: '#602992',
-			customer: { name: 'James Miller', initials: 'JM', color: '#fde68a' },
-			status: 'Paid',
-			total: 1620,
-			date: '2024-12-26T16:30:00Z',
-			items: [
-				{ title: 'Ryobi ONE drill/driver', price: 409 },
-				{ title: 'Socket Systeme Electric', price: 238 },
-				{ title: 'DVB-T2 receiver bbk', price: 139 },
-				{ title: 'Inforce oil-free compressor', price: 135 },
-				{ title: 'TIG-200 welding inverter', price: 699 }
-			]
-		},
-		{
-			id: '#730345',
-			customer: { name: 'Travis French', initials: 'TF', color: '#e9d5ff' },
-			status: 'Paid',
-			total: 315.5,
-			date: '2024-12-22T10:18:00Z',
-			items: [
-				{ title: 'Square set', price: 125.5 },
-				{ title: 'Scribe', price: 45 },
-				{ title: 'Angle finder', price: 145 }
-			]
-		},
-		{
-			id: '#045321',
-			customer: { name: 'Gary Gilbert', initials: 'GG', color: '#bae6fd' },
-			status: 'Completed',
-			total: 287,
-			date: '2024-12-18T09:42:00Z',
-			items: [
-				{ title: 'Glue rollers', price: 59 },
-				{ title: 'Clamps (4)', price: 228 }
-			]
-		},
-		{
-			id: '#432019',
-			customer: { name: 'Alan White', initials: 'AW', color: '#fbcfe8' },
-			status: 'Paid',
-			total: 267.65,
-			date: '2024-12-13T13:31:00Z',
-			items: [
-				{ title: 'Router bits (set)', price: 199.65 },
-				{ title: 'Collet wrench', price: 68 }
-			]
-		},
-		{
-			id: '#985927',
-			customer: { name: 'Julie Martin', initials: 'JM', color: '#fde68a' },
-			status: 'Delivered',
-			total: 389,
-			date: '2024-12-11T11:21:00Z',
-			items: [
-				{ title: 'Oscillating tool', price: 229 },
-				{ title: 'Blade assortment', price: 160 }
-			]
-		}
-	];
+    window.demoOrders = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+        orders ?? System.Linq.Enumerable.Empty<OrderFlow.Application.DTOs.OrderDto>(),
+        new System.Text.Json.JsonSerializerOptions {
+            PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+            Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() }
+        }
+    ))
 </script>
 
 @section Scripts {
 	<script>
-		// Initialize orders display when page loads
 		document.addEventListener('DOMContentLoaded', function() {
 			if (typeof renderOrders === 'function' && window.demoOrders) {
 				renderOrders(window.demoOrders);

@@ -1,6 +1,6 @@
-﻿using OrderFlow.Application.DTOs;
+﻿using Microsoft.Extensions.Logging;
+using OrderFlow.Application.DTOs;
 using OrderFlow.Application.Interfaces.Abstract;
-using OrderFlow.Domain.Helpers;
 using OrderFlow.Domain.Interfaces;
 
 namespace OrderFlow.Application.Interfaces.Concrete
@@ -8,53 +8,60 @@ namespace OrderFlow.Application.Interfaces.Concrete
     public class AuthService : IAuthService
     {
         private readonly IUserRepository _userRepository;
-        private readonly IJwtService _jwtService;  
+        private readonly IJwtService _jwtService;
+        private readonly ILogger<AuthService> _logger;
 
-        public AuthService(IUserRepository userRepository, IJwtService jwtService)
+        public AuthService(IUserRepository userRepository, IJwtService jwtService, ILogger<AuthService> logger)
         {
             _userRepository = userRepository;
             _jwtService = jwtService;
+            _logger = logger;
         }
 
         public async Task<LoginResponse?> LoginAsync(LoginRequest request)
         {
+            _logger.LogInformation("Entering LoginAsync method for email: {Email}", request.Email);
             var a = await _userRepository.FindAsync(u =>
                 u.Email == request.Email &&
                 u.Password == AesEncryptionHelper.Encrypt(request.Password));
-            
             var user = a.FirstOrDefault();
-
             if (user == null)
+            {
+                _logger.LogWarning("Login failed for email: {Email}", request.Email);
+                _logger.LogInformation("Exiting LoginAsync method.");
                 return null;
-
+            }
             LoginResponse loginResponse = _jwtService.GenerateToken(user.Id, user.Email, user.Role.ToString());
             user.RefreshToken = loginResponse.RefreshToken;
             user.RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(7);
             user.LastLogin = DateTime.UtcNow;
-
             _userRepository.Update(user);
             bool successs = await _userRepository.CompleteAsync();
-
+            _logger.LogInformation("User {Email} logged in successfully.", request.Email);
+            _logger.LogInformation("Exiting LoginAsync method.");
             return loginResponse;
         }
 
         public async Task<LoginResponse?> RefreshTokenAsync(RefreshTokenRequest request)
         {
+            _logger.LogInformation("Entering RefreshTokenAsync method for email: {Email}", request.Email);
             var user = (await _userRepository.FindAsync(u =>
                 u.Email == request.Email &&
                 u.RefreshToken == request.RefreshToken &&
                 u.RefreshTokenExpiresAt > DateTime.UtcNow)).FirstOrDefault();
-
             if (user == null)
+            {
+                _logger.LogWarning("Refresh token failed for email: {Email}", request.Email);
+                _logger.LogInformation("Exiting RefreshTokenAsync method.");
                 return null;
-
+            }
             LoginResponse loginResponse = _jwtService.GenerateToken(user.Id, user.Email, user.Role.ToString());
             user.RefreshToken = loginResponse.RefreshToken;
             user.RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(7);
-            
             _userRepository.Update(user);
             bool successs = await _userRepository.CompleteAsync();
-
+            _logger.LogInformation("Refresh token succeeded for email: {Email}", request.Email);
+            _logger.LogInformation("Exiting RefreshTokenAsync method.");
             return loginResponse;
         }
     }

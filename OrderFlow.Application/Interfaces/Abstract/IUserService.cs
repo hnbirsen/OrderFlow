@@ -7,5 +7,6 @@ namespace OrderFlow.Application.Interfaces.Abstract
     {
         Task<IEnumerable<UserDto>> GetAllUsersAsync();
         Task<bool> CreateUserAsync(CreateUserRequest request);
+        Task<int> GetAvailableCourierId();
     }
 }

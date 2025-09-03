@@ -2,17 +2,20 @@
 using Microsoft.AspNetCore.Mvc;
 using OrderFlow.Application.DTOs;
 using OrderFlow.Application.Interfaces.Abstract;
+using OrderFlow.Domain.Constants;
 
 namespace OrderFlow.API.Controllers
 {
     public class OrderController : BaseApiControler
     {
         private readonly IOrderService _orderService;
+        private readonly IOrderAssignmentService _orderAssignmentService;
         private readonly ILogger<OrderController> _logger;
 
-        public OrderController(IOrderService orderService, ILogger<OrderController> logger)
+        public OrderController(IOrderService orderService, ILogger<OrderController> logger, IOrderAssignmentService orderAssignmentService)
         {
             _orderService = orderService;
+            _orderAssignmentService = orderAssignmentService;
             _logger = logger;
         }
 
@@ -20,6 +23,7 @@ namespace OrderFlow.API.Controllers
         /// Retrieves all orders.
         /// </summary>
         [HttpGet("get-all")]
+        [Authorize(Roles = RoleNames.Admin)]
         public async Task<IActionResult> GetAll()
         {
             _logger.LogInformation("Entering GetAll method.");
@@ -35,6 +39,7 @@ namespace OrderFlow.API.Controllers
         /// </summary>
         /// <param name="trackingCode">Tracking code of the order.</param>
         [HttpGet("track")]
+        [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Customer}")]
         public async Task<IActionResult> GetByTrackingCode(string trackingCode)
         {
             _logger.LogInformation("Entering GetByTrackingCode method.");
@@ -58,6 +63,7 @@ namespace OrderFlow.API.Controllers
         /// <param name="orderId">Order identifier.</param>
         /// <param name="status">New status value.</param>
         [HttpPut("update-status")]
+        [Authorize(Roles = RoleNames.Admin)]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateOrderStatusRequest updateOrderStatusRequest)
         {
             _logger.LogInformation("Entering UpdateStatus method.");
@@ -100,7 +106,7 @@ namespace OrderFlow.API.Controllers
         /// </summary>
         /// <param name="request">Order creation request data.</param>
         [HttpPost("create")]
-        [Authorize(Roles = "Customer")]
+        [Authorize(Roles = RoleNames.Customer)]
         public async Task<IActionResult> Create([FromBody] CreateOrderRequest createOrderRequest)
         {
             _logger.LogInformation("Entering Create method.");
@@ -109,6 +115,63 @@ namespace OrderFlow.API.Controllers
             _logger.LogInformation("Order created for userId: {UserId}", createOrderRequest.UserId);
             _logger.LogInformation("Exiting Create method.");
             return Created("", null);
+        }
+
+        /// <summary>
+        /// Assigns an order to a courier.
+        /// </summary>
+        /// <param name="request">Order assignment request data.</param>
+        [HttpPost("assign-order")]
+        [Authorize(Roles = RoleNames.Admin)]
+        public async Task<IActionResult> AssignOrder([FromBody] AssignOrderRequest assignOrderRequest)
+        {
+            _logger.LogInformation("Entering AssignOrder method.");
+            _logger.LogInformation("AssignOrder requested for orderId: {OrderId} to courierId: {CourierId}", assignOrderRequest.OrderId, assignOrderRequest.CourierId);
+            var result = await _orderAssignmentService.AssignOrderAsync(assignOrderRequest);
+            if (!result)
+            {
+                _logger.LogWarning("Failed to assign orderId: {OrderId} to courierId: {CourierId}", assignOrderRequest.OrderId, assignOrderRequest.CourierId);
+                _logger.LogInformation("Exiting AssignOrder method.");
+                return BadRequest("Failed to assign order to courier.");
+            }
+            _logger.LogInformation("Order assigned for orderId: {OrderId} to courierId: {CourierId}", assignOrderRequest.OrderId, assignOrderRequest.CourierId);
+            _logger.LogInformation("Exiting AssignOrder method.");
+            return Ok();
+        }
+
+        /// <summary>
+        /// Retrieves orders assigned to a specific courier.
+        /// </summary>
+        /// <param name="courierId">Courier identifier.</param>
+        [HttpGet("assigned-orders/{courierId}")]
+        [Authorize(Roles = RoleNames.Courier)]
+        public async Task<IActionResult> GetAssignedOrdersByCourierId(int courierId)
+        {
+            _logger.LogInformation("Entering GetAssignedOrdersByCourierId method.");
+            _logger.LogInformation("GetAssignedOrdersByCourierId requested for courierId: {CourierId}", courierId);
+
+            // Get assignments for the courier
+            var orderAssignments = await _orderAssignmentService.GetByCourierIdAsync(courierId);
+
+            // Get order IDs from assignments
+            var orderIds = orderAssignments.Select(x => x.OrderId).ToList();
+
+            // If no assignments, return empty list
+            if (!orderIds.Any())
+            {
+                _logger.LogInformation("No assigned orders found for courierId: {CourierId}", courierId);
+                _logger.LogInformation("Exiting GetAssignedOrdersByCourierId method.");
+                return Ok(new List<OrderDto>());
+            }
+
+            // Get all orders and filter by assigned IDs
+            var allOrders = await _orderService.GetAllOrdersAsync();
+            var assignedOrders = allOrders.Where(o => orderIds.Contains(o.Id)).ToList();
+
+            _logger.LogInformation("{Count} assigned orders returned for courierId: {CourierId}", assignedOrders.Count, courierId);
+            _logger.LogInformation("Exiting GetAssignedOrdersByCourierId method.");
+
+            return Ok(assignedOrders);
         }
     }
 }

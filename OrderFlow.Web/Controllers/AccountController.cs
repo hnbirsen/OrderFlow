@@ -92,11 +92,20 @@ namespace OrderFlow.Web.Controllers
                     return View(model);
                 }
 
+                var userId = ParseUserIdFromJwt(loginResponse.AccessToken);
+                if (string.IsNullOrEmpty(userId)) 
+                {
+                    _logger.LogError("User ID not found in token for user: {Email}", model.Email);
+                    ViewBag.Error = "User ID not found. Please contact support.";
+                    return View(model);
+                }
+
                 // Store tokens and email in session
                 HttpContext.Session.SetString("access_token", loginResponse.AccessToken);
                 HttpContext.Session.SetString("refresh_token", loginResponse.RefreshToken);
                 HttpContext.Session.SetString("email", model.Email);
                 HttpContext.Session.SetString("role", role);
+                HttpContext.Session.SetString("userId", userId);
 
                 _logger.LogInformation("User {Email} logged in successfully with role {Role}.", model.Email, role);
 
@@ -186,6 +195,19 @@ namespace OrderFlow.Web.Controllers
             var handler = new JwtSecurityTokenHandler();
             var jwt = handler.ReadJwtToken(token);
             return jwt.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value ?? null;
+        }
+
+        /// <summary>
+        /// Extracts the user ID from the specified JSON Web Token (JWT).
+        /// </summary>
+        /// <param name="token">The JWT from which to extract the user ID. Must be a valid JWT.</param>
+        /// <returns>The user ID as a string if the JWT contains a claim of type <see
+        /// cref="System.Security.Claims.ClaimTypes.NameIdentifier"/>;  otherwise, <see langword="null"/>.</returns>
+        private string? ParseUserIdFromJwt(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwt = handler.ReadJwtToken(token);
+            return jwt.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? null;
         }
     }
 }

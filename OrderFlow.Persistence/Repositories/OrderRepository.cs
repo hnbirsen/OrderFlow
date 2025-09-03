@@ -10,12 +10,5 @@ namespace OrderFlow.Persistence.Repositories
         public OrderRepository(OrderFlowDbContext context) : base(context)
         {
         }
-
-        public async Task<IEnumerable<OrderEntity>> GetOrdersByUserIdAsync(int userId)
-        {
-            return await _dbSet
-                .Where(x => x.UserId == userId)
-                .ToListAsync();
-        }
     }
 }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using OrderFlow.Domain.Constants;
 using OrderFlow.Web.Middlewares;
 using OrderFlow.Web.Models;
 using System.Diagnostics;
@@ -22,7 +23,7 @@ namespace OrderFlow.Web.Controllers
         /// Accessible only to users with the "Admin" role.
         /// </summary>
         [Route("")]
-        [RoleAuthorize("Admin")]
+        [RoleAuthorize(RoleNames.Admin)]
         public IActionResult Index()
         {
             return View();
